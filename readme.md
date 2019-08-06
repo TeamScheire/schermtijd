@@ -67,6 +67,22 @@ reboot
 sudo apt-get update && sudo apt-get -y upgrade
 ```
 
+## nodejs + mongodb
+
+```
+sudo -s
+curl -sL https://deb.nodesource.com/setup_11.x | bash -
+sudo apt-get install -y nodejs
+sudo apt-get install -y mongodb-server
+```
+
+
+[https://dev.to/bogdaaamn/run-your-nodejs-application-on-a-headless-raspberry-pi-4jnn](https://dev.to/bogdaaamn/run-your-nodejs-application-on-a-headless-raspberry-pi-4jnn)
+
+
+https://medium.com/@dinyangetoh/how-to-build-simple-restful-api-with-nodejs-expressjs-and-mongodb-99348012925d
+https://github.com/eelcocramer/node-bluetooth-serial-port/issues/16
+
 ## Thermal printer
 
 Het is deze [https://www.adafruit.com/product/2751](https://www.adafruit.com/product/2751)
