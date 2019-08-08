@@ -14,14 +14,16 @@ var activiteitSchema = mongoose.Schema({
     materiaal: {
         type: String,
         maxlength: 100
-    }, 
+    },
     create_date: {
         type: Date,
         default: Date.now
     },
     modified_date: {
         type: Date
-    },
+    }
+}, {
+    collection: 'activiteit'
 });
 
 // Export Contact model

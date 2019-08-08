@@ -10,7 +10,7 @@ exports.index = function (req, res) {
             });
         }
         res.json({
-            status: "success",
+            status: true,
             message: "Activiteiten opgehaald",
             data: Activiteiten
         });
@@ -19,15 +19,19 @@ exports.index = function (req, res) {
 
 exports.new = function (req, res) {
     var activiteit = new Activiteit();
-    activiteit.titel = req.body.titel ? req.body.titel : activiteit.titel;
+    activiteit.titel = req.body.titel;
     activiteit.beschrijving = req.body.beschrijving;
     activiteit.materiaal = req.body.materiaal;
 
     activiteit.save(function (err) {
         if (err) {
-            res.send(err);
+            res.json({
+                status: false,
+                message: err
+            })
         } else {
             res.json({
+                status: true,
                 message: 'Nieuwe activiteit gemaakt!',
                 data: activiteit
             });
@@ -38,9 +42,13 @@ exports.new = function (req, res) {
 exports.view = function (req, res) {
     Activiteit.findById(req.params.activiteit_id, function (err, Activiteit) {
         if (err) {
-            res.send(err);
+            res.json({
+                status: false,
+                message: err
+            })
         } else {
             res.json({
+                status: true,
                 message: 'Activiteit geladen',
                 data: Activiteit
             });
@@ -51,19 +59,22 @@ exports.view = function (req, res) {
 exports.update = function (req, res) {
     Activiteit.findById(req.params.activiteit_id, function (err, Activiteit) {
         if (err) {
-            res.send(err);
+            res.json({
+                status: false,
+                message: err
+            })
         } else {
-            Activiteit.titel = req.body.titel ? req.body.titel : Activiteit.titel;
+            Activiteit.titel = req.body.titel;
             Activiteit.beschrijving = req.body.beschrijving;
             Activiteit.materiaal = req.body.materiaal;
-            Activiteit.modified_date = Date.now;
+            Activiteit.modified_date = Date.now();
 
             Activiteit.save(function (err) {
                 if (err) {
-
                     res.json(err);
                 } else {
                     res.json({
+                        status: true,
                         message: 'Activiteit aangepast',
                         data: Activiteit
                     });
@@ -78,10 +89,13 @@ exports.delete = function (req, res) {
         _id: req.params.activiteit_id
     }, function (err, Activiteit) {
         if (err) {
-            res.send(err);
+            res.json({
+                status: false,
+                message: err
+            })
         } else {
             res.json({
-                status: "success",
+                status: true,
                 message: 'Activiteit gewist'
             });
         }
