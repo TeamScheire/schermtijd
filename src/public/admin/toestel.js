@@ -1,9 +1,8 @@
-var API_ENDPOINT = API_URL + 'activiteit/';
+var API_ENDPOINT = API_URL + 'toestel/';
 
-var defaultActiviteit = {
-    titel: '',
-    beschrijving: '',
-    materiaal: ''
+var defaultToestel = {
+    adres: '',
+    eigenaar: ''
 };
 
 var index = function () {
@@ -12,9 +11,9 @@ var index = function () {
 
         $.each(raw.data, function (index, data) {
             var html = '<tr data-id="' + data.id + '">';
-            html += '<td>' + data.titel + '</td>';
-            html += '<td>' + data.beschrijving.replace(/\n/g,"<br />") + '</td>';
-            html += '<td>' + (data.materiaal ? data.materiaal.replace(/\n/g,"<br />") : 'geen materiaal') + '</td>';
+            html += '<td>' + data.adres + '</td>';
+            html += '<td>' + data.eigenaar + '</td>';
+            html += '<td>' + data.score + '</td>';
             html += '<td>';
             html += '<a href="#" class="btn btn-primary edit"><i class="fa fa-pencil"></i> aanpassen</a> ';
             html += '<a href="#" class="btn btn-danger delete"><i class="fa fa-times-circle"></i> wissen</a>';
@@ -27,10 +26,9 @@ var index = function () {
 };
 
 var fillDataForm = function(data) {
-    $('#titel').val(data.titel);
-    $('#beschrijving').val(data.beschrijving);
-    $('#materiaal').val(data.materiaal);
-    $('#errorMessages').html('');
+    $('#titel').val(data.adres);
+    $('#beschrijving').val(data.eigenaar);
+   $('#errorMessages').html('');
     $('#errorMessages').hide();
 };
 
@@ -41,7 +39,7 @@ $(document).ready(function () {
         e.preventDefault();
         $('#dataModalLabel').html('Voeg item toe');
         $('#dataModal form').attr('data-action', 'new');
-        fillDataForm(defaultActiviteit);
+        fillDataForm(defaultToestel);
         $('#dataModal').modal();
     });
 
@@ -68,7 +66,7 @@ $(document).ready(function () {
                     $('#dataModal').modal('hide');
                     index();
                 } else {
-                    $('#errorMessages').html('Titel en materiaal zijn verplicht in te vullen.');
+                    $('#errorMessages').html('Adres en eigenaar zijn verplicht in te vullen.');
                     $('#errorMessages').show();
                 }
             });
@@ -84,7 +82,7 @@ $(document).ready(function () {
                         $('#dataModal').modal('hide');
                         index();
                     } else {
-                        $('#errorMessages').html('Titel en materiaal zijn verplicht in te vullen.')
+                        $('#errorMessages').html('Adres en eigenaar zijn verplicht in te vullen.')
                         $('#errorMessages').show();
                     }
                 }

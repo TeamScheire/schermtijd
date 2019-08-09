@@ -1,135 +1,121 @@
-Toestel = require('../models/toestel');
+var db = require("../database.js")
 
-// Handle index actions
-exports.index = function (req, res) {
-    Toestel.get(function (err, Toestellen) {
+exports.index = (req, res) => {
+    var sql = "SELECT * FROM toestel"
+    var params = []
+    db.all(sql, params, (err, rows) => {
         if (err) {
-            res.json({
-                status: "error",
-                message: err,
+            res.status(400).json({
+                "error": err.message
             });
+            return;
         }
         res.json({
             status: true,
-            message: "Toestellen opgehaald",
-            data: Toestellen
+            message: "success",
+            data: rows
+        })
+    });
+};
+
+exports.new = (req, res) => {
+    var errors = []
+    if (!req.body.adres) {
+        errors.push("Vul een adres in");
+    }
+    if (errors.length) {
+        res.json({
+            status: false,
+            message: errors
         });
+        return;
+    }
+    var data = {
+        adres: req.body.adres,
+        eigenaar: req.body.eigenaar,
+        score: 0
+    }
+    var sql = 'INSERT INTO toestel (adres, eigenaar, score) VALUES (?,?,?)'
+    var params = [data.adres, data.eigenaar, data.score]
+    db.run(sql, params, function (err, result) {
+        if (err) {
+            res.status(400).json({
+                "error": err.message
+            })
+            return;
+        }
+        res.json({
+            status: true,
+            message: 'Nieuw toestel gemaakt!',
+            data: data,
+            id: this.lastID
+        })
     });
 };
 
-exports.new = function (req, res) {
-    var toestel = new Toestel();
-    toestel.adres = req.body.adres;
-    toestel.eigenaar = req.body.eigenaar;
-
-    toestel.save(function (err) {
+exports.view = (req, res) => {
+    var sql = "SELECT * FROM toestel WHERE id = ?"
+    var params = [req.params.id]
+    db.get(sql, params, (err, row) => {
         if (err) {
-            res.json({
-                status: false,
-                message: err
-            })
-        } else {
+            res.status(400).json({
+                "error": err.message
+            });
+            return;
+        }
+        res.json({
+            status: true,
+            message: 'Toestel geladen',
+            data: row
+        })
+    });
+};
+
+exports.update = (req, res) => {
+    var data = {
+        adres: req.body.adres,
+        eigenaar: req.body.eigenaar
+    }
+    db.run(
+        `UPDATE toestel set 
+           adres = COALESCE(?,adres), 
+           eigenaar = COALESCE(?,eigenaar) 
+           WHERE id = ?`,
+        [data.adres, data.eigenaar, req.params.id],
+        function (err, result) {
+            if (err) {
+                res.json({
+                    status: false,
+                    message: err
+                })
+                return;
+            }
             res.json({
                 status: true,
-                message: 'Nieuwe toestel gemaakt!',
-                data: toestel
-            });
+                message: 'toestel aangepast',
+                data: data,
+                changes: this.changes
+            })
         }
-    });
+    );
 };
 
-exports.view = function (req, res) {
-    Toestel.findById(req.params.toestel_id, function (err, Toestel) {
-        if (err) {
-            res.json({
-                status: false,
-                message: err
-            })
-        } else {
-            res.json({
-                status: true,
-                message: 'Toestel geladen',
-                data: Toestel
-            });
-        }
-    });
-};
-
-exports.update = function (req, res) {
-    Toestel.findById(req.params.toestel_id, function (err, Toestel) {
-        if (err) {
-            res.json({
-                status: false,
-                message: err
-            })
-        } else {
-            Toestel.adres = req.body.adres;
-            Toestel.eigenaar = req.body.eigenaar;
-            Toestel.modified_date = Date.now();
-
-            Toestel.save(function (err) {
-                if (err) {
-                    res.json(err);
-                } else {
-                    res.json({
-                        status: true,
-                        message: 'Toestel aangepast',
-                        data: Toestel
-                    });
-                }
-            });
-        }
-    });
-};
-
-exports.delete = function (req, res) {
-    Toestel.deleteOne({
-        _id: req.params.toestel_id
-    }, function (err, Toestel) {
-        if (err) {
-            res.json({
-                status: false,
-                message: err
-            })
-        } else {
+exports.delete = (req, res) => {
+    db.run(
+        'DELETE FROM toestel WHERE id = ?',
+        req.params.id,
+        function (err, result) {
+            if (err) {
+                res.json({
+                    status: false,
+                    message: err
+                })
+                return;
+            }
             res.json({
                 status: true,
                 message: 'Toestel gewist'
             });
         }
-    });
-};
-
-exports.viewScore = function (req, res) {
-
-};
-
-exports.newScore = function (req, res) {
-    Toestel.findById(req.params.toestel_id, function (err, Toestel) {
-        if (err) {
-            res.json({
-                status: false,
-                message: err
-            })
-        } else {
-            var score = {
-                score: req.body.score,
-                beschrijving: req.body.beschrijving
-            };
-
-            Toestel.scores.push(score);
-            Toestel.score = parseInt(Toestel.score) + parseInt(req.body.score);
-            Toestel.save(function (err) {
-                if (err) {
-                    res.json(err);
-                } else {
-                    res.json({
-                        status: true,
-                        message: 'Score toegevoegd',
-                        data: Toestel
-                    });
-                }
-            });
-        }
-    });
+    );
 };

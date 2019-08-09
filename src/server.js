@@ -1,21 +1,8 @@
-let express = require('express');
+var express = require("express")
+var db = require("./database.js")
 let bodyParser = require('body-parser');
-let mongoose = require('mongoose');
 let path = require("path");
 require('dotenv').config();
-
-// database shizzle
-mongoose.connect(process.env.DATABASE || 'mongodb://localhost/schermtijd', {
-    useNewUrlParser: true
-});
-
-var db = mongoose.connection;
-
-if (!db) {
-    console.log("Error connecting db")
-} else {
-    console.log("Db connected successfully")
-}
 
 // app shizzle
 let app = express();
@@ -33,6 +20,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) =>
     res.sendFile(path.join(__dirname, 'public/index.html'))
 );
+
+
+
+
+
 
 // server
 var port = process.env.PORT || 8080;

@@ -10,18 +10,19 @@ router.get('/', function (req, res) {
 
 // controllers
 var activiteitController = require('../controllers/activiteit');
-var toestelController = require('../controllers/toestel');
 
-// routes
 router.route('/activiteit')
     .get(activiteitController.index)
     .post(activiteitController.new);
 
-router.route('/activiteit/:activiteit_id')
+router.route('/activiteit/:id')
     .get(activiteitController.view)
     .patch(activiteitController.update)
     .put(activiteitController.update)
-    .delete(activiteitController.delete);
+    .delete(activiteitController.delete)
+
+
+var toestelController = require('../controllers/toestel');
 
 router.route('/toestel')
     .get(toestelController.index)
@@ -33,9 +34,12 @@ router.route('/toestel/:toestel_id')
     .put(toestelController.update)
     .delete(toestelController.delete);
 
+
+var toestelController = require('../controllers/score');
+
 router.route('/toestel/:toestel_id/score')
     .get(toestelController.viewScore)
-    .post(toestelController.newScore);
+    .post(toestelController.newScore)
 
-// Export API routes
+
 module.exports = router;
