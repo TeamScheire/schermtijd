@@ -33,8 +33,8 @@ Enter the ssid and passphrase for the wifi
 ```
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 network={
-    ssid="xxxxxxxxxx"
-    psk="xxxxxxxxxx"
+    ssid="draadloos"
+    psk="geike123"
     key_mgmt=WPA-PSK
 }
 ```
@@ -67,21 +67,49 @@ reboot
 sudo apt-get update && sudo apt-get -y upgrade
 ```
 
-## nodejs + mongodb
+## nodejs + SQLite
 
 ```
 sudo -s
 curl -sL https://deb.nodesource.com/setup_11.x | bash -
-sudo apt-get install -y nodejs
-sudo apt-get install -y mongodb-server
+apt-get install -y nodejs sqlite3
 ```
-
 
 [https://dev.to/bogdaaamn/run-your-nodejs-application-on-a-headless-raspberry-pi-4jnn](https://dev.to/bogdaaamn/run-your-nodejs-application-on-a-headless-raspberry-pi-4jnn)
 
+## nginx
 
-https://medium.com/@dinyangetoh/how-to-build-simple-restful-api-with-nodejs-expressjs-and-mongodb-99348012925d
-https://github.com/eelcocramer/node-bluetooth-serial-port/issues/16
+```
+sudo apt-get install -y nodejs
+```
+
+```
+sudo vim /etc/nginx/sites-available/default
+
+server {
+        listen 80;
+        listen [::]:80;
+
+        server_name schermtijd01.local;
+
+        root /var/www/;
+        index index.html;
+
+        location / {
+            proxy_pass http://localhost:3000;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+        }
+}
+```
+
+```
+sudo systemctl start nginx
+
+```
 
 ## Thermal printer
 
@@ -102,35 +130,28 @@ De printer stroom geven (minimaal 1.5A 5v - 9v) via het ander poortje
 
 ### activeren over TTL
 
-Na de draadjes aangesloten te hebben, een eerste test:
+Eerst configureren sodat we de seriale bus kunnen gebruiken
 
 ```
-stty -F /dev/serial0 9600
-echo -e "This is a test.\\n\\n\\n" > /dev/serial0
+sudo raspi-config
 ```
 
-Installing CUPS (for image processing)
+Interfacing options > disable the serial console > enable the serial port hardware.
+
+Na reboot, een eerste test:
 
 ```
-sudo apt-get update && sudo apt-get -y install git cups wiringpi build-essential libcups2-dev libcupsimage2-dev
+stty -F /dev/ttyS0 9600
+echo -e "\\n\\nHallo printertje.\\n\\n\\n" > /dev/ttyS0
 ```
 
-Installing printer drivers
+## LED displays
 
-```
-git clone https://github.com/adafruit/zj-58
-cd zj-58 && make && sudo ./install
-```
+I2C-bus activeren:
+[https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c)
 
-Adding printer to cups
+Aansluitingen:
+[https://learn.adafruit.com/led-backpack-displays-on-raspberry-pi-and-beaglebone-black/wiring](https://learn.adafruit.com/led-backpack-displays-on-raspberry-pi-and-beaglebone-black/wiring)
 
-```
-sudo lpadmin -p ZJ-58 -E -v serial:/dev/ttyAMA0?baud=9600 -m zjiang/ZJ-58.ppd
-sudo lpoptions -d ZJ-58
-```
-
-
-## Referenties
-
-- [https://learn.adafruit.com/networked-thermal-printer-using-cups-and-raspberry-pi/connect-and-configure-printer](https://learn.adafruit.com/networked-thermal-printer-using-cups-and-raspberry-pi/connect-and-configure-printer)
-- [https://learn.adafruit.com/mini-thermal-receipt-printer?view=all](https://learn.adafruit.com/mini-thermal-receipt-printer?view=all)
+python library:
+[https://github.com/adafruit/Adafruit_Python_LED_Backpack](https://github.com/adafruit/Adafruit_Python_LED_Backpack)
