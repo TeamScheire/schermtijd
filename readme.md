@@ -55,9 +55,9 @@ Het standaard wachtwoord is *raspberry*
 sudo raspi-config
 ```
 
-Expand Filesystem
-Change hostname
-Set Timezone
+- Expand Filesystem
+- Change hostname
+- Set Timezone
 
 reboot
 
@@ -69,19 +69,25 @@ sudo apt-get update && sudo apt-get -y upgrade
 
 ## nodejs + SQLite
 
+Het scorebord en de activiteiten zitten in een SQLite database met een api errond, geschreven in node.js
+
 ```
 sudo -s
 curl -sL https://deb.nodesource.com/setup_11.x | bash -
 apt-get install -y nodejs sqlite3
 ```
 
-[https://dev.to/bogdaaamn/run-your-nodejs-application-on-a-headless-raspberry-pi-4jnn](https://dev.to/bogdaaamn/run-your-nodejs-application-on-a-headless-raspberry-pi-4jnn)
+meer info op [https://dev.to/bogdaaamn/run-your-nodejs-application-on-a-headless-raspberry-pi-4jnn](https://dev.to/bogdaaamn/run-your-nodejs-application-on-a-headless-raspberry-pi-4jnn)
 
 ## nginx
 
+Het scorebord draait op een webserver op je raspberry pi, hiervoor moet nginx draaien zodat je het vlot via eender welke browser kan bekijken (zolang die op hetzelfde wifi netwerk verbonden is als je raspberry pi).
+
 ```
-sudo apt-get install -y nodejs
+sudo apt-get install -y nginx
 ```
+
+configureren van je site:
 
 ```
 sudo vim /etc/nginx/sites-available/default
@@ -106,6 +112,8 @@ server {
 }
 ```
 
+Herstart de webservice hierna:
+
 ```
 sudo systemctl start nginx
 
@@ -114,7 +122,8 @@ sudo systemctl start nginx
 ## Thermal printer
 
 Het is deze [https://www.adafruit.com/product/2751](https://www.adafruit.com/product/2751)
-Met een volledige handleiding en meer bronnen, [https://learn.adafruit.com/mini-thermal-receipt-printer](hier)
+
+Een volledige handleiding en meer bronnen, [https://learn.adafruit.com/mini-thermal-receipt-printer](hier)
 
 ### Draadjes aansluiten
 
@@ -122,7 +131,7 @@ Met een volledige handleiding en meer bronnen, [https://learn.adafruit.com/mini-
 - TX van de printer naar RX van de raspi
 - GND van de printer naar GND van de raspi
 
-De printer stroom geven (minimaal 1.5A 5v - 9v) via het ander poortje
+De printer stroom geven (minimaal 1.5A 5v - 9v) via het andere adaptor. De printer trekt veel ampère en dit delen met de raspberry pi is geen goed plan ...
 
 ![](connection_schematics.png)
 
@@ -130,7 +139,7 @@ De printer stroom geven (minimaal 1.5A 5v - 9v) via het ander poortje
 
 ### activeren over TTL
 
-Eerst configureren sodat we de seriale bus kunnen gebruiken
+Eerst configureren zodat we de seriale bus kunnen gebruiken
 
 ```
 sudo raspi-config
@@ -147,7 +156,13 @@ echo -e "\\n\\nHallo printertje.\\n\\n\\n" > /dev/ttyS0
 
 ## LED displays
 
-I2C-bus activeren:
+Eerst de I2C bus activeren via alweer
+
+```
+sudo raspi-config
+```
+
+Stappen staan hier:
 [https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c)
 
 Aansluitingen:
