@@ -49,6 +49,12 @@ ssh pi@raspberry.local
 
 Het standaard wachtwoord is *raspberry*
 
+### Update filesystem
+
+```
+sudo apt-get update && sudo apt-get -y upgrade
+```
+
 ### raspi-config
 
 ```
@@ -61,12 +67,6 @@ sudo raspi-config
 
 reboot
 
-### Update filesystem
-
-```
-sudo apt-get update && sudo apt-get -y upgrade
-```
-
 ## nodejs + SQLite
 
 Het scorebord en de activiteiten zitten in een SQLite database met een api errond, geschreven in node.js
@@ -78,6 +78,26 @@ apt-get install -y nodejs sqlite3
 ```
 
 meer info op [https://dev.to/bogdaaamn/run-your-nodejs-application-on-a-headless-raspberry-pi-4jnn](https://dev.to/bogdaaamn/run-your-nodejs-application-on-a-headless-raspberry-pi-4jnn)
+
+
+## Activeren/installeren van de api en frontend
+
+In de folder van de nodejs server alle requirements installeren:
+
+```
+cd src
+npm install
+```
+
+De api starten
+
+```
+nodejs server.js
+```
+
+
+_TODO: Uitleggen om via pm2 daemonisen van de nodejs applicatie_
+
 
 ## nginx
 
@@ -119,6 +139,9 @@ sudo systemctl start nginx
 
 ```
 
+Nu kan je van eender welk toestel dat op hetzelfde netwerk zit als je raspberry pi surfen naar  [http://schermtijd01.local](http://schermtijd01.local) om het scorebord te zien.
+
+
 ## Thermal printer
 
 Het is deze [https://www.adafruit.com/product/2751](https://www.adafruit.com/product/2751)
@@ -153,30 +176,6 @@ Na reboot, een eerste test:
 stty -F /dev/ttyS0 9600
 echo -e "\\n\\nHallo printertje.\\n\\n\\n" > /dev/ttyS0
 ```
-
-## Activeren/installeren van de api en frontend
-
-Inloggen op de raspberry pi via ssh:
-
-```
-ssh pi@schermtijd.local
-```
-
-In de folder van de nodejs server alle requirements installeren:
-
-```
-cd src
-npm install
-```
-
-De api starten
-
-```
-nodejs server.js
-```
-
-
-_TODO: Uitleggen om via pm2 daemonisen van de nodejs applicatie_
 
 
 ## LED displays

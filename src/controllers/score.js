@@ -1,12 +1,41 @@
 var db = require("../database.js")
-exports.viewScore = (req, res) => {
 
+exports.viewScore = (req, res) => {
+    var errors = []
+    if (!req.params.toestel_id) {
+        errors.push("Geef een toestel door");
+    }
+    if (errors.length) {
+        res.json({
+            status: false,
+            message: errors
+        });
+        return;
+    }
+    var sql = "SELECT * FROM score WHERE toestel_id = ?"
+    var params = [req.params.toestel_id]
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            res.status(400).json({
+                "error": err.message
+            });
+            return;
+        }
+        res.json({
+            status: true,
+            message: "success",
+            data: rows
+        })
+    });
 };
 
 exports.newScore = (req, res) => {
     var errors = []
     if (!req.body.score) {
         errors.push("Vul een score in");
+    }
+    if (req.body.score != parseInt(req.body.score, 10)) {
+        errors.push("Vul een correcte score in");
     }
     if (!req.body.bericht) {
         errors.push("Vul een bericht in");
@@ -23,7 +52,7 @@ exports.newScore = (req, res) => {
         score: req.body.score,
         bericht: req.body.bericht
     }
-    var sql = 'INSERT INTO score (toestel_id, score, bericht, datum) VALUES (?,?,?, CURRENT_TIMESTAMP)'
+    var sql = 'INSERT INTO score (toestel_id, score, bericht, datum) VALUES (?, ?, ?, CURRENT_TIMESTAMP)'
     var params = [data.toestel_id, data.score, data.bericht]
     db.run(sql, params, function (err, result) {
         if (err) {
@@ -37,10 +66,32 @@ exports.newScore = (req, res) => {
         db.run(sql, params, function (err, result) {
             res.json({
                 status: true,
-                message: 'Nieuwe score toegevoegd!',
-                data: data,
-                id: this.lastID
+                message: 'Nieuwe score toegevoegd!'
             })
         })
     });
+};
+
+exports.delete = (req, res) => {
+    db.run(
+        'DELETE FROM score WHERE id = ?',
+        (req.params.score_id),
+        function (err, result) {
+            if (err) {
+                res.json({
+                    status: false,
+                    message: err
+                })
+                return;
+            }
+            var sql = 'UPDATE toestel SET score = (SELECT SUM(score) FROM score WHERE toestel_id = ?) WHERE id = ?';
+            var params = [req.params.toestel_id, req.params.toestel_id]
+            db.run(sql, params, function (err, result) {
+                res.json({
+                    status: true,
+                    message: 'Score gewist'
+                })
+            });
+        }
+    );
 };

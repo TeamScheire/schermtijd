@@ -103,7 +103,7 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
     db.run(
         'DELETE FROM toestel WHERE id = ?',
-        req.params.id,
+        req.params.score_id,
         function (err, result) {
             if (err) {
                 res.json({

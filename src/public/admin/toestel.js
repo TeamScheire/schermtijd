@@ -15,6 +15,7 @@ var index = function () {
             html += '<td>' + data.eigenaar + '</td>';
             html += '<td>' + data.score + '</td>';
             html += '<td>';
+            html += '<a href="score.html?toestel_id=' + data.id + '" class="btn btn-warning editScore"><i class="fa fa-line-chart"></i> bewerk score</a> ';
             html += '<a href="#" class="btn btn-primary edit"><i class="fa fa-pencil"></i> aanpassen</a> ';
             html += '<a href="#" class="btn btn-danger delete"><i class="fa fa-times-circle"></i> wissen</a>';
             html += '</td>';
@@ -25,10 +26,10 @@ var index = function () {
     }, 'json');
 };
 
-var fillDataForm = function(data) {
-    $('#titel').val(data.adres);
-    $('#beschrijving').val(data.eigenaar);
-   $('#errorMessages').html('');
+var fillDataForm = function (data) {
+    $('#adres').val(data.adres);
+    $('#eigenaar').val(data.eigenaar);
+    $('#errorMessages').html('');
     $('#errorMessages').hide();
 };
 
@@ -43,15 +44,15 @@ $(document).ready(function () {
         $('#dataModal').modal();
     });
 
-    $('body').on('click', 'a.edit', function(e) {
+    $('body').on('click', 'a.edit', function (e) {
         e.preventDefault();
         var id = $(this).closest("tr").attr('data-id');
-        $.get(API_ENDPOINT + id, function(raw) {
+        $.get(API_ENDPOINT + id, function (raw) {
             $('#dataModalLabel').html('Bewerk item');
             $('#dataModal form').attr('data-action', 'edit');
             $('#dataModal form').attr('data-id', id);
             fillDataForm(raw.data);
-            $('#dataModal').modal();           
+            $('#dataModal').modal();
         });
     });
 
@@ -60,7 +61,7 @@ $(document).ready(function () {
         var formData = $("#dataModal form").serializeArray();
         var action = $('#dataModal form').attr('data-action');
 
-        if (action == 'new') {   
+        if (action == 'new') {
             $.post(API_ENDPOINT, formData, function (result) {
                 if (result.status) {
                     $('#dataModal').modal('hide');
@@ -76,8 +77,7 @@ $(document).ready(function () {
                 url: API_ENDPOINT + id,
                 type: 'PUT',
                 data: formData,
-                success: function(result) {
-                    console.log(result);
+                success: function (result) {
                     if (result.status) {
                         $('#dataModal').modal('hide');
                         index();
@@ -98,13 +98,13 @@ $(document).ready(function () {
         $('#confirm-delete').modal();
     });
 
-    $('.modal').on('click', '#delete', function(e) {
+    $('.modal').on('click', '#delete', function (e) {
         e.preventDefault();
         var id = $('#confirm-delete .titleToDelete').attr('data-id');
         $.ajax({
             url: API_ENDPOINT + id,
             type: 'DELETE',
-            success: function(result) {
+            success: function (result) {
                 $('#confirm-delete').modal('hide');
                 index();
             }

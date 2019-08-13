@@ -79,7 +79,6 @@ $(document).ready(function () {
                 type: 'PUT',
                 data: formData,
                 success: function(result) {
-                    console.log(result);
                     if (result.status) {
                         $('#dataModal').modal('hide');
                         index();

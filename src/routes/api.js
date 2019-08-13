@@ -28,18 +28,19 @@ router.route('/toestel')
     .get(toestelController.index)
     .post(toestelController.new);
 
-router.route('/toestel/:toestel_id')
+router.route('/toestel/:id')
     .get(toestelController.view)
     .patch(toestelController.update)
     .put(toestelController.update)
     .delete(toestelController.delete);
 
-
-var toestelController = require('../controllers/score');
+var scoreController = require('../controllers/score');
 
 router.route('/toestel/:toestel_id/score')
-    .get(toestelController.viewScore)
-    .post(toestelController.newScore)
+    .get(scoreController.viewScore)
+    .post(scoreController.newScore);
 
+router.route('/toestel/:toestel_id/score/:score_id')
+    .delete(scoreController.delete);
 
 module.exports = router;
