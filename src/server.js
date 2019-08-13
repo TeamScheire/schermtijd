@@ -4,7 +4,6 @@ let bodyParser = require('body-parser');
 let path = require("path");
 require('dotenv').config();
 
-
 // app shizzle
 let app = express();
 app.use(bodyParser.urlencoded({

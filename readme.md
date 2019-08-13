@@ -154,12 +154,60 @@ stty -F /dev/ttyS0 9600
 echo -e "\\n\\nHallo printertje.\\n\\n\\n" > /dev/ttyS0
 ```
 
+## Activeren/installeren van de api en frontend
+
+Inloggen op de raspberry pi via ssh:
+
+```
+ssh pi@schermtijd.local
+```
+
+In de folder van de nodejs server alle requirements installeren:
+
+```
+cd src
+npm install
+```
+
+De api starten
+
+```
+nodejs server.js
+```
+
+
+_TODO: Uitleggen om via pm2 daemonisen van de nodejs applicatie_
+
+
 ## LED displays
 
 Eerst de I2C bus activeren via alweer
 
 ```
 sudo raspi-config
+```
+
+Interfacing options > I2C > enable (yes)
+
+Drivers voor python installeren:
+
+```
+sudo apt-get install -y python-smbus i2c-tools build-essential python-dev git python-pil python-pip
+git clone https://github.com/adafruit/Adafruit_Python_LED_Backpack.git
+cd Adafruit_Python_LED_Backpack
+sudo python setup.py install
+```
+
+Aansluiten en testen i2c:
+
+```
+sudo i2cdetect -y 0
+```
+
+Starten van python app:
+
+```
+python gpio/app.py
 ```
 
 Stappen staan hier:
