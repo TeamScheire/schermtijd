@@ -95,9 +95,29 @@ De api starten
 nodejs server.js
 ```
 
+## automatisch starten en uitvoeren in de achtergrond van de server
 
-_TODO: Uitleggen om via pm2 daemonisen van de nodejs applicatie_
+Om de nodejs server als service te laten draaien (te daemonizen zoals ze zeggen) kan je pm2 gebruiken.
 
+```
+npm install pm2 -g
+```
+
+In plaats van de server te starten via het `nodejs` commando, doe je dit nu via:
+
+```
+pm2 start server.js
+```
+
+De server draait nu als een service.
+
+Je kan de status bekijken of de service stoppen of opnieuw starten via volgende commando's:
+
+```
+pm2 list
+pm2 stop 0
+pm2 start 0
+```
 
 ## nginx
 
