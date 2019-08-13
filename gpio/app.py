@@ -10,16 +10,23 @@ matrix.begin()
 display = SevenSegment.SevenSegment(address=0x71, busnum=1)
 display.begin()
 
-ledPin = 18    # pin11 --- led
-buttonPin = 4    # pin12 --- button
+gsmSlots = [
+	[4, 18] # buttonpin, ledpin
+	# TODO meerdere gsmslots aansluiten en testen
+]
 
-buttonStatus = 0
+activeButtons = []
 points = 0
 
 def setup():
 	GPIO.setmode(GPIO.BCM)
-	GPIO.setup(ledPin, GPIO.OUT)
-	GPIO.setup(buttonPin, GPIO.IN)
+	for slot in gsmSlots:
+		GPIO.setup(slot[0], GPIO.IN)
+		GPIO.setup(slot[1], GPIO.OUT)
+		GPIO.add_event_detect(slot[0], GPIO.BOTH, callback = lambda x: handleButton(slot[0], slot[1]))
+
+	# TODO gote knop voor printen van activiteit
+ 
 	writeSmiley()
 	resetPoints()
 	print 'loaded'
@@ -29,8 +36,8 @@ def writeSmiley():
 	hf = ['00111100', '01000010', '10100101' ,'10000001', '10100101', '10011001', '01000010', '00111100']
 	# sad face
 	sf = ['00111100', '01000010', '10100101', '10000001', '10011001', '10100101', '01000010', '00111100']
-	global buttonStatus
-	if (buttonStatus == 1):
+	global activeButtons
+	if (len(activeButtons) > 0):
 		smiley = hf
 	else:
 		smiley = sf
@@ -55,31 +62,40 @@ def resetPoints():
 
 def incrementPoints():
 	global points
-	points = points + 1
+	# TODO algoritme voor punten finetunen
+	points = points + len(activeButtons)
 	writePoints()
 
-def check():
-	global buttonStatus
-	if (buttonStatus):
+def calculatePoints():
+	global activeButtons
+	if (len(activeButtons) > 0):
 		incrementPoints()
 	else:
 		resetPoints()
 
-def swLed(pin):
-	global buttonStatus
+def handleButton(buttonPin, ledPin):
+	global activeButtons
 	buttonStatus = GPIO.input(buttonPin)
-	#print 'gedrukt op pin: ', pin, ' - status: ', buttonStatus
+	print 'gedrukt op pin: ', buttonPin, ' - status: ', buttonStatus
 	GPIO.output(ledPin, buttonStatus)
+	if (buttonStatus):
+		if buttonPin not in activeButtons:
+			activeButtons.append(buttonPin)
+	else:
+		if buttonPin in activeButtons:
+			activeButtons.remove(buttonPin)
 	writeSmiley()
 
 def loop():
-	GPIO.add_event_detect(buttonPin, GPIO.BOTH, callback = swLed)
 	while True:
-		check()
+		# TODO knop toevoegen voor het deksel en pas punten tellen als dit toe is
+		# TODO Als deksel open gaat: verdiende punten wegschrijven naar api voor de gsmslots die bezet zijn
+		calculatePoints()
 		time.sleep(1)
 
 def destroy():
-	GPIO.output(ledPin, GPIO.LOW)
+	for slot in gsmSlots:
+		GPIO.setup(slot[1], GPIO.LOW)
 	display.clear()
 	display.write_display()
 	matrix.clear()
@@ -90,5 +106,5 @@ if __name__ == '__main__':
 	setup()
 	try:
 		loop()
-	except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the child program destroy() will be  executed.
+	except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, destroy() will be executed.
 		destroy()
