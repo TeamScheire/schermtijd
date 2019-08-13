@@ -33,7 +33,7 @@ exports.newScore = (req, res) => {
             return;
         }
         var sql = 'UPDATE toestel SET score = score + ? WHERE id = ?'
-        var params = [data.score, req.params.toestel_id]
+        var params = [data.score, data.toestel_id]
         db.run(sql, params, function (err, result) {
             res.json({
                 status: true,
