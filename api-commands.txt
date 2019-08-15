@@ -1,1 +1,0 @@
-curl -d "score=10&bericht=goed%20bezig" -X POST http://localhost:3000/api/{toestel_id}/score

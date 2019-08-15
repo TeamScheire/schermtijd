@@ -176,9 +176,9 @@ Een volledige handleiding en meer bronnen, [https://learn.adafruit.com/mini-ther
 
 De printer stroom geven (minimaal 1.5A 5v - 9v) via het andere adaptor. De printer trekt veel ampère en dit delen met de raspberry pi is geen goed plan ...
 
-![](connection_schematics.png)
+![](docs/connection_schematics.png)
 
-![](raspberry_pi_gpio-diagram.png)
+![](docs/raspberry_pi_gpio-diagram.png)
 
 ### activeren over TTL
 
@@ -223,6 +223,12 @@ Aansluiten en testen i2c:
 sudo i2cdetect -y 0
 ```
 
+Nog python packet requests installeren om api calls te kunnen doen:
+
+```
+pip install requests
+```
+
 Starten van python app:
 
 ```
@@ -237,3 +243,8 @@ Aansluitingen:
 
 python library:
 [https://github.com/adafruit/Adafruit_Python_LED_Backpack](https://github.com/adafruit/Adafruit_Python_LED_Backpack)
+
+## PCB voor de doos
+
+![schema](pcb/gpiobord-schema.png)
+![pcb](pcb/gpiobord-pcb.png)
