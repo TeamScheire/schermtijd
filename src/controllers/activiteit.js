@@ -36,6 +36,26 @@ exports.view = (req, res) => {
     });
 };
 
+exports.random = (req, res) => {
+    // TODO Selectie verfijnen op uur en weer
+    // TODO fallback voor als er geen activiteit gevonden wordt
+    var sql = "SELECT * FROM activiteit WHERE aantal_min <= ? AND aantal_max >= ? AND id >= (abs(random()) % (SELECT max(id) FROM activiteit)) LIMIT 1"
+    var params = [req.params.aantal_personen, req.params.aantal_personen]
+    db.get(sql, params, (err, row) => {
+        if (err) {
+            res.status(400).json({
+                "error": err.message
+            });
+            return;
+        }
+        res.json({
+            status: true,
+            message: 'Activiteit geladen',
+            data: row
+        })
+    });
+};
+
 exports.new = (req, res) => {
     var errors = []
     if (!req.body.titel) {

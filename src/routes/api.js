@@ -15,6 +15,9 @@ router.route('/activiteit')
     .get(activiteitController.index)
     .post(activiteitController.new);
 
+router.route('/activiteit/random/:aantal_personen')
+    .get(activiteitController.random);
+
 router.route('/activiteit/:id')
     .get(activiteitController.view)
     .patch(activiteitController.update)

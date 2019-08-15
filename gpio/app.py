@@ -146,14 +146,15 @@ def handledoosButton(buttonPin, ledPin):
  	statusDoosDeksel = buttonStatus
 
 def handleActicviteitButton(buttonPin, ledPin):
-	global statusPrinting
+	global statusPrinting, activeButtons, statusDoosDeksel
 	time.sleep(.1)
 	buttonStatus = GPIO.input(buttonPin)
 	print 'Activiteitknop is ingedrukt: ', buttonPin, ' - status: ', buttonStatus
-	if ((statusPrinting == 0) and (buttonStatus == 1)):
+	if ((statusPrinting == 0) and (buttonStatus == 1) and (len(activeButtons) >= 1) and (statusDoosDeksel == 1)):
 		statusPrinting = 1
 		GPIO.output(ledPin, statusPrinting)
 		print 'Ik print een activteit'
+		url = apiurl + 'activiteit/random/{}'.format(activeButtons)
 		# TODO printen in async, met op het einde statusPrinting = 0 en led terug uit
 
 def loop():
