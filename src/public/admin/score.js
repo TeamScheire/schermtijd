@@ -22,7 +22,7 @@ var index = function () {
             html += '<td>' + data.bericht + '</td>';
             html += '<td>' + data.datum + '</td>';
             html += '<td>';
-            html += '<a href="#" class="btn btn-danger delete"><i class="fa fa-times-circle"></i> wissen</a>';
+            html += '<a href="#" class="btn btn-danger btn-sm delete"><i class="fa fa-times-circle"></i> wissen</a>';
             html += '</td>';
             html += '</tr>';
 
