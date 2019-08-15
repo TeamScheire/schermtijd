@@ -16,8 +16,8 @@ var index = function () {
             html += '<td>' + data.score + '</td>';
             html += '<td>';
             html += '<a href="score.html?toestel_id=' + data.id + '" class="btn btn-warning btn-sm editScore"><i class="fa fa-line-chart"></i> bewerk score</a> ';
-            html += '<a href="#" class="btn btn-primary btn-sm edit"><i class="fa fa-pencil"></i> aanpassen</a> ';
-            html += '<a href="#" class="btn btn-danger btn-sm delete"><i class="fa fa-times-circle"></i> wissen</a>';
+            html += '<a href="#" class="btn btn-primary btn-sm edit"><i class="fa fa-pencil"></i> bewerk eigenaar</a> ';
+            //html += '<a href="#" class="btn btn-danger btn-sm delete"><i class="fa fa-times-circle"></i> wissen</a>';
             html += '</td>';
             html += '</tr>';
 

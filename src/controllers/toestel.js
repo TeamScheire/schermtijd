@@ -1,7 +1,7 @@
 var db = require("../database.js")
 
 exports.index = (req, res) => {
-    var sql = "SELECT * FROM toestel"
+    var sql = "SELECT * FROM toestel ORDER BY adres"
     var params = []
     db.all(sql, params, (err, rows) => {
         if (err) {

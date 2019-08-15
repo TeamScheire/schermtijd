@@ -12,7 +12,7 @@ exports.viewScore = (req, res) => {
         });
         return;
     }
-    var sql = "SELECT * FROM score WHERE toestel_id = ?"
+    var sql = "SELECT * FROM score WHERE toestel_id = ? ORDER BY datum DESC"
     var params = [req.params.toestel_id]
     db.all(sql, params, (err, rows) => {
         if (err) {
