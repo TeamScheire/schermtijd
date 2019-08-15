@@ -54,10 +54,14 @@ exports.new = (req, res) => {
     var data = {
         titel: req.body.titel,
         beschrijving: req.body.beschrijving,
+        aantal_min: req.body.aantal_min,
+        aantal_max: req.body.aantal_max,
+        locatie: req.body.locatie,
+        tijdstip: req.body.tijdstip,
         materiaal: req.body.materiaal
     }
-    var sql = 'INSERT INTO activiteit (titel, beschrijving, materiaal) VALUES (?,?,?)'
-    var params = [data.titel, data.beschrijving, data.materiaal]
+    var sql = 'INSERT INTO activiteit (titel, beschrijving, aantal_min, aantal_max, locatie, tijdstip, materiaal) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    var params = [data.titel, data.beschrijving, data.aantal_min, data.aantal_max, data.locatie, data.tijdstip, data.materiaal]
     db.run(sql, params, function (err, result) {
         if (err) {
             res.status(400).json({
@@ -78,15 +82,23 @@ exports.update = (req, res) => {
     var data = {
         titel: req.body.titel,
         beschrijving: req.body.beschrijving,
+        aantal_min: req.body.aantal_min,
+        aantal_max: req.body.aantal_max,
+        locatie: req.body.locatie,
+        tijdstip: req.body.tijdstip,
         materiaal: req.body.materiaal
     }
     db.run(
         `UPDATE activiteit set 
            titel = COALESCE(?,titel), 
            beschrijving = COALESCE(?,beschrijving), 
+           aantal_min = COALESCE(?,aantal_min),
+           aantal_max = COALESCE(?,aantal_max),
+           locatie = COALESCE(?,locatie),
+           tijdstip = COALESCE(?,tijdstip),
            materiaal = COALESCE(?,materiaal) 
            WHERE id = ?`,
-        [data.titel, data.beschrijving, data.materiaal, req.params.id],
+        [data.titel, data.beschrijving, data.aantal_min, data.aantal_max, data.locatie, data.tijdstip, data.materiaal, req.params.id],
         function (err, result) {
             if (err) {
                 res.json({

@@ -34,6 +34,7 @@ router.route('/toestel/:id')
     .put(toestelController.update)
     .delete(toestelController.delete);
 
+    
 var scoreController = require('../controllers/score');
 
 router.route('/toestel/:toestel_id/score')
