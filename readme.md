@@ -200,28 +200,66 @@ echo -e "\\n\\nHallo printertje.\\n\\n\\n" > /dev/ttyS0
 
 ## LED displays
 
-Eerst de I2C bus activeren via alweer
+
+
+
+I2C is een protocol waarbij je tot 8 elementen in een bus kan koppelen aan één seriele bus.
+Je moet dit protocol eerst activeren op de raspberry pi via raspi-config:
 
 ```
 sudo raspi-config
 ```
 
-Interfacing options > I2C > enable (yes)
+Daar kies je Interfacing options > I2C > enable (yes)
 
-Drivers voor python installeren:
+Voor Python moeten wat paketten/drivers geïnstalleerd worden:
 
 ```
 sudo apt-get install -y python-smbus i2c-tools build-essential python-dev git python-pil python-pip
-git clone https://github.com/adafruit/Adafruit_Python_LED_Backpack.git
+git clone https://github.com/adafruit/Adafruit_Python_LED_Backpack.git # voor de 7-segment en de 8x8 matrix
 cd Adafruit_Python_LED_Backpack
 sudo python setup.py install
+cd ..
+git clone https://github.com/adafruit/Adafruit_Python_SSD1306.git # voor de oled
+cd Adafruit_Python_SSD1306/
+sudo python setup.py install
+
 ```
 
-Aansluiten en testen i2c:
+Hierna kan je de displays aansluiten en via het volgende commando de adressen checken:
 
 ```
 sudo i2cdetect -y 0
 ```
+
+
+Je krijgt iets in deze aard:
+
+```
+pi@schermtijd01:~ $ i2cdetect -y 1
+     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+00:          -- -- -- -- -- -- -- -- -- -- -- -- --
+10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+30: -- -- -- -- -- -- -- -- -- -- -- -- 3c -- -- --
+40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+70: 70 71 72 -- -- -- -- --
+```
+
+Adres 70, 71 en 3c zijn ingebruik
+
+
+### 7-segment display
+
+### 8X8 matrix
+
+### oled SSD1306
+[Dit oled display wordt gebruikt](https://www.ebay.com/itm/IIC-I2C-0-91-128x32-White-OLED-LCD-Display-Module-DC-3-3V-5V-For-Arduino-PIC/332047978840).
+
+
+
 
 Nog python packet requests installeren om api calls te kunnen doen:
 

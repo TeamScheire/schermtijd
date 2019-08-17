@@ -5,8 +5,10 @@ import RPi.GPIO as GPIO
 from Adafruit_LED_Backpack import SevenSegment
 from Adafruit_LED_Backpack import Matrix8x8
 
-matrix = Matrix8x8.Matrix8x8()
-matrix.begin()
+matrixLeft = Matrix8x8.Matrix8x8()
+matrixLeft.begin()
+matrixRight = Matrix8x8.Matrix8x8(address=0x72)
+matrixRight.begin()
 display = SevenSegment.SevenSegment(address=0x71, busnum=1)
 display.begin()
 
@@ -52,27 +54,38 @@ def setup():
 	GPIO.setup(activiteitButton[1], GPIO.OUT)
 	GPIO.add_event_detect(activiteitButton[0], GPIO.BOTH, callback = lambda x: handleActicviteitButton(activiteitButton[0], activiteitButton[1]))
 	
-	writeSmiley()
+	writeEyes()
 	resetPoints()
 	print 'loaded ...'
 
-def writeSmiley():
+def writeEyes():
+	# TODO animate eyes
+	# Source: https://www.robotshop.com/community/forum/t/robot-facial-expressions-with-led-matrix/13470
 	# happy face
-	hf = ['00111100', '01000010', '10100101' ,'10000001', '10100101', '10011001', '01000010', '00111100']
+	hf = [
+		['00111000', '01111100', '11111110' ,'110001100', '110001100', '11111110', '01111100', '00000000'],
+		['00011100', '00111110', '01111111' ,'011000110', '011000110', '01111111', '00111110', '00000000']
+	]
 	# sad face
-	sf = ['00111100', '01000010', '10100101', '10000001', '10011001', '10100101', '01000010', '00111100']
+	sf = [
+		['00000000', '00000000', '11111110', '11111110', '11000110', '01111100', '00000000', '00000000'],
+		['00000000', '00000000', '01111111', '01111111', '01100011', '00111110', '00000000', '00000000']
+	]
 	global activeButtons
 	if (len(activeButtons) > 0):
-		smiley = hf
+		eyes = hf
 	else:
-		smiley = sf
+		eyes = sf
 
 	try:
-		matrix.clear()
+		matrixLeft.clear()
+		matrixRight.clear()
 		for x in range(8):
 			for y in range(8):
-				matrix.set_pixel(x, y, int(smiley[x][y]))
-		matrix.write_display()
+				matrixLeft.set_pixel(x, y, int(eyes[0][x][y]))
+				matrixRight.set_pixel(x, y, int(eyes[1][x][y]))
+		matrixLeft.write_display()
+		matrixRight.write_display()
 	except:
 		print('ledmatrix print error')
 
@@ -119,7 +132,7 @@ def handleButton(buttonPin, ledPin, toestelNumber):
 	else:
 		if toestelNumber in activeButtons:
 			activeButtons.remove(toestelNumber)
-	writeSmiley()
+	writeEyes()
 
 def handledoosButton(buttonPin, ledPin):
 	global statusDoosDeksel, points
@@ -171,8 +184,10 @@ def destroy():
 	
 		display.clear()
 		display.write_display()
-		matrix.clear()
-		matrix.write_display()
+		matrixLeft.clear()
+		matrixLeft.write_display()
+		matrixRight.clear()
+		matrixRight.write_display()
 		GPIO.cleanup()
 	except:
 		print 'I2C error'
