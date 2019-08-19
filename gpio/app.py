@@ -47,10 +47,10 @@ font = ImageFont.truetype('Retron2000.ttf', 12)
 fontDebug = ImageFont.load_default()
 
 # 8X8 led matrix
-matrixLeft = Matrix8x8.Matrix8x8()
-matrixLeft.begin()
-matrixRight = Matrix8x8.Matrix8x8(address=0x72)
+matrixRight = Matrix8x8.Matrix8x8()
 matrixRight.begin()
+matrixLeft = Matrix8x8.Matrix8x8(address=0x72)
+matrixLeft.begin()
 # 7-segment display
 display = SevenSegment.SevenSegment(address=0x71, busnum=1)
 display.begin()
