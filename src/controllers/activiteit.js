@@ -36,7 +36,7 @@ exports.view = (req, res) => {
     });
 };
 
-exports.random = (req, res) => {
+exports.printRandom = (req, res) => {
     // TODO Selectie verfijnen op uur en weer
     // TODO fallback voor als er geen activiteit gevonden wordt
     var sql = "SELECT * FROM activiteit WHERE aantal_min <= ? AND aantal_max >= ? AND id >= (abs(random()) % (SELECT max(id) FROM activiteit)) LIMIT 1"
@@ -48,9 +48,10 @@ exports.random = (req, res) => {
             });
             return;
         }
+        // TODO printcommando
         res.json({
             status: true,
-            message: 'Activiteit geladen',
+            message: 'Activiteit geprint',
             data: row
         })
     });

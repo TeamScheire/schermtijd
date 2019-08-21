@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="nl">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>beheer tijdslots</title>
+
+    <link rel="stylesheet" href="../includes/bootstrap.min.css">
+    <link rel="stylesheet" href="../includes/jquery-ui.css">
+    <link href="../includes/font-awesome.min.css" rel="stylesheet">
+    <style>
+        .slider .ui-slider-handle {
+            width: 3em;
+            height: 1.6em;
+            top: 50%;
+            margin-top: -.8em;
+            text-align: center;
+            line-height: 1.6em;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <div class="container">
+        <div class="py-5 text-center">
+            <h1>Tijdslots</h1>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table" id="datatable">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Uur</th>
+                            <th scope="col">Gewicht</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="4"><em>aan het laden ...</em></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer class="my-5 pt-5 text-muted text-center text-small">
+            <p class="mb-1">&copy; 2019 <a href="https://www.canvas.be/teamscheire">Team Scheire</a></p>
+            <ul class="list-inline">
+                <li class="list-inline-item"><a href="https://www.github.com/teamscheire/schermtijd">code op github</a>
+                </li>
+            </ul>
+        </footer>
+    </div>
+    <script src="../includes/jquery-3.1.1.min.js"></script>
+    <script src="../includes/jquery-ui.js"></script>
+    <script src="../includes/popper.min.js"></script>
+    <script src="../includes/bootstrap.min.js"></script>
+    <script src="../app.js"> </script>
+    <script src="./tijdslot.js"> </script>
+</body>
+
+</html>

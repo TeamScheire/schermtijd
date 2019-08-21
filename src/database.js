@@ -38,13 +38,26 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             db.all(`SELECT COUNT() AS aantal FROM toestel`, (err, rows) => {
                 if (rows[0].aantal == 0) {
                     var insert = 'INSERT INTO toestel (id, adres, eigenaar, score) VALUES (?, ?, ?, 0)'
-                    db.run(insert, ["1", "1", "Jan"])
-                    db.run(insert, ["2", "2", "Piet"])
-                    db.run(insert, ["3", "3", "Joris"])
-                    db.run(insert, ["4", "4", "Korneel"])
-                    db.run(insert, ["5", "5", "Vriendje"])
-                    db.run(insert, ["6", "6", "Vriendinneke"])
-                    console.log('dummy toestellen toegevoegd')
+                    for (i = 1; i <= 6; i++) {
+                        db.run(insert, [i, i, "Slot " + i])
+                    }
+                    console.log('toestellen toegevoegd')
+                }
+            })
+        });
+        db.run(`CREATE TABLE IF NOT EXISTS tijdslot (
+            id INTEGER PRIMARY KEY,
+            startuur INTEGER,
+            gewicht INTEGER
+            )`, (err, rows) => {
+            db.all(`SELECT COUNT() AS aantal FROM tijdslot`, (err, rows) => {
+                if (rows[0].aantal == 0) {
+                    var insert = 'INSERT INTO tijdslot (id, startuur, gewicht) VALUES (?, ?, ?)'
+                    for (i = 1; i <= 24; i++) {
+
+                        db.run(insert, [i, i, 3])
+                    }
+                    console.log('tijdslots toegevoegd')
                 }
             })
         });
@@ -57,5 +70,6 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             )`);
     }
 });
+
 
 module.exports = db

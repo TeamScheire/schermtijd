@@ -15,8 +15,8 @@ router.route('/activiteit')
     .get(activiteitController.index)
     .post(activiteitController.new);
 
-router.route('/activiteit/random/:aantal_personen')
-    .get(activiteitController.random);
+router.route('/activiteit/printRandom/:aantal_personen')
+    .get(activiteitController.printRandom);
 
 router.route('/activiteit/:id')
     .get(activiteitController.view)
@@ -47,4 +47,13 @@ router.route('/toestel/:toestel_id/score')
 router.route('/toestel/:toestel_id/score/:score_id')
     .delete(scoreController.delete);
 
+var tijdslotController = require('../controllers/tijdslot');
+
+router.route('/tijdslot')
+    .get(tijdslotController.index);
+    
+router.route('/tijdslot/:id')
+    .patch(tijdslotController.update)
+    .put(tijdslotController.update);
+    
 module.exports = router;
