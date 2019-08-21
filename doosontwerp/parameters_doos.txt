@@ -1,0 +1,20 @@
+breedte: ( breedte / ( 2 * tandaantal_breedte ) )
+quantity: tandaantal_breedte
+distance: breedte / ( 2 * tandaantal_breedte ) * ( tandaantal_breedte - 1 )
+
+diepte: ( diepte / ( 2 * tandaantal_diepte ) )
+quantity: tandaantal_breedte
+distance: diepte / ( 2 * tandaantal_diepte ) * ( tandaantal_diepte - 1 )
+
+hoogte: ( (hoogte_gsmdeel + hoogte_technischdeel) / ( 2 * tandaantal_hoogte ) )
+quantity: tandaantal_hoogte
+distance: (hoogte_gsmdeel + hoogte_technischdeel) / ( 2 * tandaantal_hoogte ) * ( tandaantal_hoogte - 1 )
+
+
+
+(hoogte_technischdeel) / ( 2 * tandaantal_hoogte ) * ( tandaantal_hoogte - 1 )
+
+
+
+
+( ( breedte_gsm + plaatdikte ) / 2 ) * ( 2 + ( aantal_gsm / 2 ) )
