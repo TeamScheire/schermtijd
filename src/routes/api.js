@@ -15,8 +15,8 @@ router.route('/activiteit')
     .get(activiteitController.index)
     .post(activiteitController.new);
 
-router.route('/activiteit/printRandom/:aantal_personen')
-    .get(activiteitController.printRandom);
+router.route('/activiteit/getRandom/:aantal_personen')
+    .get(activiteitController.getRandom);
 
 router.route('/activiteit/:id')
     .get(activiteitController.view)

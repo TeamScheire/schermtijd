@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sched, time, requests, subprocess
+from threading import Thread
 import RPi.GPIO as GPIO
 from Adafruit_LED_Backpack import SevenSegment
 from Adafruit_LED_Backpack import Matrix8x8
@@ -11,6 +12,8 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
+displayMode = True # debugmode for no displays
+
 # Raspberry Pi pin configuration:
 RST = None     # on the PiOLED this pin isnt used
 # Note the following are only used with SPI:
@@ -18,42 +21,45 @@ DC = 23
 SPI_PORT = 0
 SPI_DEVICE = 0
 
-# 128x32 display with hardware I2C:
-disp = Adafruit_SSD1306.SSD1306_128_32(rst=RST)
-disp.begin()
-disp.clear()
-disp.display()
-# Create blank image for drawing.
-# Make sure to create image with mode '1' for 1-bit color.
-width = disp.width
-height = disp.height
-image = Image.new('1', (width, height))
+try:
+	# 128x32 display with hardware I2C:
+	disp = Adafruit_SSD1306.SSD1306_128_32(rst=RST)
+	disp.begin()
+	disp.clear()
+	disp.display()
+	# Create blank image for drawing.
+	# Make sure to create image with mode '1' for 1-bit color.
+	width = disp.width
+	height = disp.height
+	image = Image.new('1', (width, height))
 
-# Get drawing object to draw on image.
-draw = ImageDraw.Draw(image)
+	# Get drawing object to draw on image.
+	draw = ImageDraw.Draw(image)
 
-# Draw a black filled box to clear the image.
-draw.rectangle((0,0,width,height), outline=0, fill=0)
+	# Draw a black filled box to clear the image.
+	draw.rectangle((0,0,width,height), outline=0, fill=0)
 
-# Draw some shapes.
-# First define some constants to allow easy resizing of shapes.
-padding = -2
-top = padding
-bottom = height-padding
-# Move left to right keeping track of the current x position for drawing shapes.
-x = 0
+	# Draw some shapes.
+	# First define some constants to allow easy resizing of shapes.
+	padding = -2
+	top = padding
+	bottom = height-padding
+	# Move left to right keeping track of the current x position for drawing shapes.
+	x = 0
 
-font = ImageFont.truetype('Retron2000.ttf', 12)
-fontDebug = ImageFont.load_default()
+	font = ImageFont.truetype('Retron2000.ttf', 12)
+	fontDebug = ImageFont.load_default()
 
-# 8X8 led matrix
-matrixRight = Matrix8x8.Matrix8x8()
-matrixRight.begin()
-matrixLeft = Matrix8x8.Matrix8x8(address=0x72)
-matrixLeft.begin()
-# 7-segment display
-display = SevenSegment.SevenSegment(address=0x71, busnum=1)
-display.begin()
+	# 8X8 led matrix
+	matrixRight = Matrix8x8.Matrix8x8()
+	matrixRight.begin()
+	matrixLeft = Matrix8x8.Matrix8x8(address=0x72)
+	matrixLeft.begin()
+	# 7-segment display
+	display = SevenSegment.SevenSegment(address=0x71, busnum=1)
+	display.begin()
+except:
+	displayMode = False
 
 gsmSlots = [
 	# buttonpin, ledpin, toestelnumber
@@ -96,56 +102,59 @@ def setup():
 
 	GPIO.setup(activiteitButton[0], GPIO.IN)
 	GPIO.setup(activiteitButton[1], GPIO.OUT)
-	GPIO.add_event_detect(activiteitButton[0], GPIO.BOTH, callback = lambda x: handleActicviteitButton(activiteitButton[0], activiteitButton[1]))
+	GPIO.add_event_detect(activiteitButton[0], GPIO.BOTH, callback = lambda x: handleActiviteitButton(activiteitButton[0], activiteitButton[1]))
 	
 	writeEyes()
 	resetPoints()
-	print 'loaded ...'
+	print('loaded ...')
 
 def writeEyes():
-	# TODO animate eyes
-	# Source: https://www.robotshop.com/community/forum/t/robot-facial-expressions-with-led-matrix/13470
-	# happy face
-	hf = [
-		['00111000', '01111100', '11111110' ,'110001100', '110001100', '11111110', '01111100', '00000000'],
-		['00011100', '00111110', '01111111' ,'011000110', '011000110', '01111111', '00111110', '00000000']
-	]
-	# sad face
-	sf = [
-		['00000000', '00000000', '11111110', '11111110', '11000110', '01111100', '00000000', '00000000'],
-		['00000000', '00000000', '01111111', '01111111', '01100011', '00111110', '00000000', '00000000']
-	]
-	global activeButtons
-	if (len(activeButtons) > 0):
-		eyes = hf
-	else:
-		eyes = sf
+	if (displayMode):
+		# TODO animate eyes
+		# Source: https://www.robotshop.com/community/forum/t/robot-facial-expressions-with-led-matrix/13470
+		# happy face
+		hf = [
+			['00111000', '01111100', '11111110' ,'110001100', '110001100', '11111110', '01111100', '00000000'],
+			['00011100', '00111110', '01111111' ,'011000110', '011000110', '01111111', '00111110', '00000000']
+		]
+		# sad face
+		sf = [
+			['00000000', '00000000', '11111110', '11111110', '11000110', '01111100', '00000000', '00000000'],
+			['00000000', '00000000', '01111111', '01111111', '01100011', '00111110', '00000000', '00000000']
+		]
+		global activeButtons
+		if (len(activeButtons) > 0):
+			eyes = hf
+		else:
+			eyes = sf
 
-	try:
-		matrixLeft.clear()
-		matrixRight.clear()
-		for x in range(8):
-			for y in range(8):
-				matrixLeft.set_pixel(x, y, int(eyes[0][x][y]))
-				matrixRight.set_pixel(x, y, int(eyes[1][x][y]))
-		matrixLeft.write_display()
-		matrixRight.write_display()
-	except:
-		print('ledmatrix print error')
+
+		try:
+			matrixLeft.clear()
+			matrixRight.clear()
+			for x in range(8):
+				for y in range(8):
+					matrixLeft.set_pixel(x, y, int(eyes[0][x][y]))
+					matrixRight.set_pixel(x, y, int(eyes[1][x][y]))
+			matrixLeft.write_display()
+			matrixRight.write_display()
+		except:
+			print('ledmatrix print error')
 
 def writePoints():
 	global points, statusDoosDeksel
 
-	try:
-		display.clear()
-		if (statusDoosDeksel != 1):
-			display.print_number_str('----')
-		else:
-			display.print_float(points, decimal_digits = 0)
-		display.set_colon(False)
-		display.write_display()
-	except:
-		print('display print error')
+	if (displayMode):
+		try:
+			display.clear()
+			if (statusDoosDeksel != 1):
+				display.print_number_str('----')
+			else:
+				display.print_float(points, decimal_digits = 0)
+			display.set_colon(False)
+			display.write_display()
+		except:
+			print('display print error')
 
 def resetPoints():
 	global points
@@ -169,7 +178,7 @@ def handleButton(buttonPin, ledPin, toestelNumber):
 	global activeButtons, debugMode
 	time.sleep(.1)
 	buttonStatus = GPIO.input(buttonPin)
-	print 'gedrukt op pin: ', buttonPin, ' - status: ', buttonStatus
+	print('gedrukt op pin: ', buttonPin, ' - status: ', buttonStatus)
 	GPIO.output(ledPin, buttonStatus)
 	if (statusDoosDeksel == 1):
 		#debugmode toggle: als er een knop van de gsms wijzigt als de doos dicht is.
@@ -183,12 +192,22 @@ def handleButton(buttonPin, ledPin, toestelNumber):
 			activeButtons.remove(toestelNumber)
 	writeEyes()
 
+def writeScore(slotNumber):
+	global points
+	data = {
+		'score': points,
+		'bericht': 'punten verdiend via de doos!'
+	}
+	url = apiurl + 'toestel/{}/score'.format(slotNumber)
+	response = requests.post(url, data=data)
+	print(response.json())
+
 def handledoosButton(buttonPin, ledPin):
 	global statusDoosDeksel, points
 	time.sleep(.1)
 	buttonStatus = GPIO.input(buttonPin)
 	GPIO.output(ledPin, buttonStatus)
-	print 'deksel van de doos is veranderd: ', buttonPin, ' - status: ', buttonStatus
+	print('deksel van de doos is veranderd: ', buttonPin, ' - status: ', buttonStatus)
 	# als van dicht naar open
 	if ((statusDoosDeksel == 1) and (buttonStatus == 0)):
 		print('Doos is open gegaan')
@@ -200,61 +219,71 @@ def handledoosButton(buttonPin, ledPin):
 				'bericht': 'punten verdiend via de doos!'
 			}
 
-			for number in activeButtons:
-				url = apiurl + 'toestel/{}/score'.format(number)
-				response = requests.post(url, data=data)
-				print response.json()
-	
- 	statusDoosDeksel = buttonStatus
+			for slotNumber in activeButtons:
+				print(slotNumber)
+				writeScore(slotNumber)
 
-def handleActicviteitButton(buttonPin, ledPin):
+	statusDoosDeksel = buttonStatus
+
+def printActiviteit(activeButtons, ledPin):
+	global statusPrinting
+	print('printing ...')
+	cmd = "nodejs ~/src/print.js {}".format(len(activeButtons))
+	result = subprocess.check_output(cmd, shell = True )
+	print('done printing')
+	statusPrinting = 0
+	GPIO.output(ledPin, statusPrinting)
+
+def handleActiviteitButton(buttonPin, ledPin):
 	global statusPrinting, activeButtons, statusDoosDeksel
 	time.sleep(.1)
 	buttonStatus = GPIO.input(buttonPin)
-	print 'Activiteitknop is ingedrukt: ', buttonPin, ' - status: ', buttonStatus
+	print('Activiteitknop is ingedrukt: ', buttonPin, ' - status: ', buttonStatus)
 	if ((statusPrinting == 0) and (buttonStatus == 1) and (len(activeButtons) >= 1) and (statusDoosDeksel == 1)):
+		print('action to print')
 		statusPrinting = 1
 		GPIO.output(ledPin, statusPrinting)
-		print 'Ik print een activteit'
-		url = apiurl + 'activiteit/random/{}'.format(activeButtons)
-		# TODO printen in async, met op het einde statusPrinting = 0 en led terug uit
+		#printActiviteit(activeButtons, ledPin)
+		printThread = Thread(target=printActiviteit, args=(activeButtons, ledPin,))
+		printThread.start()
 
 def drawOled():
-	global draw, disp, width, height, top, bottom, debugMode
-	# Draw a black filled box to clear the image.
-	draw.rectangle((0,0,width,height), outline=0, fill=0)
+	if (displayMode):
+		global draw, disp, width, height, top, bottom, debugMode
+		# Draw a black filled box to clear the image.
+		draw.rectangle((0,0,width,height), outline=0, fill=0)
 
-	if (debugMode == 1):
-		# Shell scripts for system monitoring from here : https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-usage-and-cpu-load
-		cmd = "hostname -I | cut -d\' \' -f1"
-		IP = subprocess.check_output(cmd, shell = True )
-		cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
-		CPU = subprocess.check_output(cmd, shell = True )
-		cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%sMB %.2f%%\", $3,$2,$3*100/$2 }'"
-		MemUsage = subprocess.check_output(cmd, shell = True )
-		cmd = "df -h | awk '$NF==\"/\"{printf \"Disk: %d/%dGB %s\", $3,$2,$5}'"
-		Disk = subprocess.check_output(cmd, shell = True )
+		if (debugMode == 1):
+			# Shell scripts for system monitoring from here : https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-usage-and-cpu-load
+			cmd = "hostname -I | cut -d\' \' -f1"
+			IP = subprocess.check_output(cmd, shell = True )
+			cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
+			CPU = subprocess.check_output(cmd, shell = True )
+			cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%sMB %.2f%%\", $3,$2,$3*100/$2 }'"
+			MemUsage = subprocess.check_output(cmd, shell = True )
+			cmd = "df -h | awk '$NF==\"/\"{printf \"Disk: %d/%dGB %s\", $3,$2,$5}'"
+			Disk = subprocess.check_output(cmd, shell = True )
 
-		# Write four lines of text.
-		draw.text((x, top),       "IP: " + str(IP),  font=fontDebug, fill=255)
-		draw.text((x, top+8),     str(CPU), font=fontDebug, fill=255)
-		draw.text((x, top+16),    str(MemUsage),  font=fontDebug, fill=255)
-		draw.text((x, top+25),    str(Disk),  font=fontDebug, fill=255)
+			# Write four lines of text.
+			draw.text((x, top),       "IP: " + str(IP),  font=fontDebug, fill=255)
+			draw.text((x, top+8),     str(CPU), font=fontDebug, fill=255)
+			draw.text((x, top+16),    str(MemUsage),  font=fontDebug, fill=255)
+			draw.text((x, top+25),    str(Disk),  font=fontDebug, fill=255)
 
-	else:
-		presentLine = '  '
-		for slot in gsmSlots:
-			if slot[2] in activeButtons:
-				presentLine += ' x |'
-			else:
-				presentLine += ' o |'
-		presentLine = presentLine[:-1]
-		draw.text((x, top), "   1 | 2 | 3 | 4 | 5 | 6",  font=font, fill=255)
-		draw.text((x, top+17), presentLine,  font=font, fill=255)
+		else:
+			presentLine = '  '
+			for slot in gsmSlots:
+				if slot[2] in activeButtons:
+					presentLine += ' x |'
+				else:
+					presentLine += ' o |'
+			presentLine = presentLine[:-1]
+			draw.text((x, top), "   1 | 2 | 3 | 4 | 5 | 6",  font=font, fill=255)
+			draw.text((x, top+17), presentLine,  font=font, fill=255)
 
-	# Display image.
-	disp.image(image)
-	disp.display()
+		# Display image.
+		disp.image(image)
+		disp.display()
 
 def loop():
 	while True:
@@ -269,18 +298,19 @@ def destroy():
 		GPIO.setup(doosButton[1], GPIO.LOW)
 		GPIO.setup(activiteitButton[1], GPIO.LOW)
 	
-		display.clear()
-		display.write_display()
-		matrixLeft.clear()
-		matrixLeft.write_display()
-		matrixRight.clear()
-		matrixRight.write_display()
-		draw.rectangle((0,0,width,height), outline=0, fill=0)
-		disp.image(image)
-		disp.display()
+		if (displayMode):
+			display.clear()
+			display.write_display()
+			matrixLeft.clear()
+			matrixLeft.write_display()
+			matrixRight.clear()
+			matrixRight.write_display()
+			draw.rectangle((0,0,width,height), outline=0, fill=0)
+			disp.image(image)
+			disp.display()
 		GPIO.cleanup()
 	except:
-		print 'I2C error'
+		print('I2C error')
 
 if __name__ == '__main__':
 	setup()

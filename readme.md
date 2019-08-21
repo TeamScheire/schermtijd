@@ -197,6 +197,12 @@ stty -F /dev/ttyS0 9600
 echo -e "\\n\\nHallo printertje.\\n\\n\\n" > /dev/ttyS0
 ```
 
+### repo voor node.js
+
+Om de printer te gebruiken in Node.js, wordt deze library gebruikt: [https://github.com/xseignard/thermalPrinter](https://github.com/xseignard/thermalPrinter).
+
+Via `npm install` heb je deze requirement normaal gezien al geïnstalleerd.
+
 
 ## LED displays
 

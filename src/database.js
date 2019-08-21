@@ -1,6 +1,7 @@
+var path = require('path')
 var sqlite3 = require('sqlite3').verbose()
 
-const DBSOURCE = "./schermtijd.sqlite3"
+const DBSOURCE = path.join(__dirname, "schermtijd.sqlite3")
 
 let db = new sqlite3.Database(DBSOURCE, (err) => {
     if (err) {
@@ -22,9 +23,9 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             )`, (err, rows) => {
             db.all(`SELECT COUNT() AS aantal FROM activiteit`, (err, rows) => {
                 if (rows[0].aantal == 0) {
-                    var insert = 'INSERT INTO activiteit (titel, beschrijving) VALUES (?,?)'
-                    db.run(insert, ["Gras afrijden", "Ga naar buiten en rij het gras af!"])
-                    db.run(insert, ["Kamer opruimen", "Ga naar boven en ruim je kamer op"])
+                    var insert = 'INSERT INTO activiteit (titel, beschrijving, aantal_min, aantal_max) VALUES (?,?)'
+                    db.run(insert, ["Gras afrijden", "Ga naar buiten en rij het gras af!", 1, 1])
+                    db.run(insert, ["Kamer opruimen", "Ga naar boven en ruim je kamer op", 1, 2])
                     console.log('dummy activiteiten toegevoegd')
                 }
             })

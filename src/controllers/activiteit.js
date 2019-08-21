@@ -36,24 +36,34 @@ exports.view = (req, res) => {
     });
 };
 
-exports.printRandom = (req, res) => {
+exports.getRandom = (req, res) => {
     // TODO Selectie verfijnen op uur en weer
-    // TODO fallback voor als er geen activiteit gevonden wordt
-    var sql = "SELECT * FROM activiteit WHERE aantal_min <= ? AND aantal_max >= ? AND id >= (abs(random()) % (SELECT max(id) FROM activiteit)) LIMIT 1"
+    var sql = "SELECT * FROM activiteit WHERE aantal_min <= ? AND aantal_max >= ?"
     var params = [req.params.aantal_personen, req.params.aantal_personen]
-    db.get(sql, params, (err, row) => {
+    db.all(sql, params, (err, rows) => {
         if (err) {
             res.status(400).json({
                 "error": err.message
             });
             return;
         }
-        // TODO printcommando
+        row = rows[Math.floor(Math.random() * rows.length)];
+        console.log(row);
         res.json({
             status: true,
-            message: 'Activiteit geprint',
+            message: 'Activiteit opgehaald',
             data: row
         })
+    });
+};
+
+exports.getRandomActiviteit = (aantal_personen, callback) => {
+    // TODO Selectie verfijnen op uur en weer
+    var sql = "SELECT * FROM activiteit WHERE aantal_min <= ? AND aantal_max >= ?"
+    var params = [aantal_personen, aantal_personen]
+    db.all(sql, params, (err, rows) => {
+        row = rows[Math.floor(Math.random() * rows.length)];
+        callback(row);
     });
 };
 

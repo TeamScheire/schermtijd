@@ -1,3 +1,5 @@
 src/node_modules
 src/package-lock.json
 src/schermtijd.sqlite3
+printertest/node_modules
+printertest/package-lock.json
