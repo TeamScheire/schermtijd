@@ -86,7 +86,7 @@ statusPrinting = 0
 activeButtons = []
 points = 0
 stateEyes = 0
-stop_threads = False
+stopEyes = False
 
 apiurl = 'http://localhost:3000/api/'
 debugMode = 0
@@ -121,7 +121,7 @@ def setup():
 	print('loaded ...')
 
 def animateEyes(dummyvar):
-	global stateEyes, stop_threads
+	global stateEyes, stopEyes
 	if (displayMode):
 		eyesTemplate = [
 			[# droeving, geen gsm in een slot
@@ -163,14 +163,14 @@ def animateEyes(dummyvar):
 			except:
 				print('ledmatrix print error')
 
-			if stop_threads:
+			if stopEyes:
 				print('stopped')
 				matrixLeft.clear()
 				matrixLeft.write_display()
 				matrixRight.clear()
 				matrixRight.write_display()
 				break
-				
+
 			time.sleep(1)
 
 def writeEyes():
@@ -331,9 +331,9 @@ def loop():
 		time.sleep(1)
 
 def destroy():
-	global stop_threads
+	global stopEyes
 	try:
-		stop_threads = True
+		stopEyes = True
 		for slot in gsmSlots:
 			GPIO.setup(slot[1], GPIO.LOW)
 		GPIO.setup(doosButton[1], GPIO.LOW)
@@ -342,10 +342,6 @@ def destroy():
 		if (displayMode):
 			display.clear()
 			display.write_display()
-			matrixLeft.clear()
-			matrixLeft.write_display()
-			matrixRight.clear()
-			matrixRight.write_display()
 			draw.rectangle((0,0,width,height), outline=0, fill=0)
 			disp.image(image)
 			disp.display()
