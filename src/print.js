@@ -17,10 +17,14 @@ if (isNaN(aantal_deelnemers)) {
     return 0
 }
 
+var path = __dirname + '/logo-teamscheire.png';
+
 serialPort.on('open', function () {
     printer.on('ready', function () {
         activiteitController.getRandomActiviteit(2, (activiteit) => {
             try {
+                printer.printImage(path);
+                printer.printLine(' ');
                 printer.horizontalLine(16);
                 if (activiteit) {
                     printer.printLine(activiteit.titel);
