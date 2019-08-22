@@ -22,6 +22,7 @@ SPI_PORT = 0
 SPI_DEVICE = 0
 
 try:
+	print('testing I2C')
 	# 128x32 display with hardware I2C:
 	disp = Adafruit_SSD1306.SSD1306_128_32(rst=RST)
 	disp.begin()
@@ -47,18 +48,24 @@ try:
 	# Move left to right keeping track of the current x position for drawing shapes.
 	x = 0
 
-	font = ImageFont.truetype('Retron2000.ttf', 12)
+	font = ImageFont.truetype('./Retron2000.ttf', 12)
 	fontDebug = ImageFont.load_default()
+	print('Adafruit_SSD1306 display loaded')
 
 	# 8X8 led matrix
 	matrixRight = Matrix8x8.Matrix8x8()
 	matrixRight.begin()
+	print('matrixRight loaded')
 	matrixLeft = Matrix8x8.Matrix8x8(address=0x72)
 	matrixLeft.begin()
+	print('matrixLeft loaded')
 	# 7-segment display
 	display = SevenSegment.SevenSegment(address=0x71, busnum=1)
 	display.begin()
+	print('SevenSegment loaded')
+
 except:
+	print('error loading I2C')
 	displayMode = False
 
 gsmSlots = [
@@ -78,11 +85,15 @@ statusDoosDeksel = 0 # 0 = open, 1 = gesloten
 statusPrinting = 0
 activeButtons = []
 points = 0
+stateEyes = 0
+stop_threads = False
 
 apiurl = 'http://localhost:3000/api/'
 debugMode = 0
+eyesThread = False
 
 def setup():
+	global eyesThread
 	GPIO.setmode(GPIO.BCM)
 
 	for slot in gsmSlots:
@@ -104,42 +115,70 @@ def setup():
 	GPIO.setup(activiteitButton[1], GPIO.OUT)
 	GPIO.add_event_detect(activiteitButton[0], GPIO.BOTH, callback = lambda x: handleActiviteitButton(activiteitButton[0], activiteitButton[1]))
 	
-	writeEyes()
+	eyesThread = Thread(target=animateEyes, args=(stateEyes,))
+	eyesThread.start()
 	resetPoints()
 	print('loaded ...')
 
-def writeEyes():
+def animateEyes(dummyvar):
+	global stateEyes, stop_threads
 	if (displayMode):
-		# TODO animate eyes
-		# Source: https://www.robotshop.com/community/forum/t/robot-facial-expressions-with-led-matrix/13470
-		# happy face
-		hf = [
-			['00111000', '01111100', '11111110' ,'110001100', '110001100', '11111110', '01111100', '00000000'],
-			['00011100', '00111110', '01111111' ,'011000110', '011000110', '01111111', '00111110', '00000000']
+		eyesTemplate = [
+			[# droeving, geen gsm in een slot
+				[
+					['00000000', '00000000', '11111110', '11111110', '11000110', '01111100', '00000000', '00000000'],
+					['00000000', '00000000', '01111111', '01111111', '01100011', '00111110', '00000000', '00000000']
+				],
+					[
+					['00000000', '00000000', '00000000', '11111110', '11111110', '11000110', '01111100', '00000000'],
+					['00000000', '00000000', '00000000', '01111111', '01111111', '01100011', '00111110', '00000000']
+				]
+			],
+			[# happy, een gsm in een slot
+				[
+					['00111000', '01111100', '11111110' ,'110001100', '110001100', '11111110', '01111100', '00000000'],
+					['00011100', '00111110', '01111111' ,'011000110', '011000110', '01111111', '00111110', '00000000']
+				],
+					[
+					['00000000', '00111000', '01111100', '11111110' ,'110001100', '110001100', '11111110', '01111100'],
+					['00000000', '00011100', '00111110', '01111111' ,'011000110', '011000110', '01111111', '00111110']
+				]
+			]
 		]
-		# sad face
-		sf = [
-			['00000000', '00000000', '11111110', '11111110', '11000110', '01111100', '00000000', '00000000'],
-			['00000000', '00000000', '01111111', '01111111', '01100011', '00111110', '00000000', '00000000']
-		]
-		global activeButtons
-		if (len(activeButtons) > 0):
-			eyes = hf
-		else:
-			eyes = sf
 
+		eyesSequence = 1
+		print(stateEyes)
+		while True:
+			eyesSequence = 1 - eyesSequence
+			eyes = eyesTemplate[stateEyes][eyesSequence]
+			try:
+				matrixLeft.clear()
+				matrixRight.clear()
+				for x in range(8):
+					for y in range(8):
+						matrixLeft.set_pixel(x, y, int(eyes[0][x][y]))
+						matrixRight.set_pixel(x, y, int(eyes[1][x][y]))
+				matrixLeft.write_display()
+				matrixRight.write_display()
+			except:
+				print('ledmatrix print error')
 
-		try:
-			matrixLeft.clear()
-			matrixRight.clear()
-			for x in range(8):
-				for y in range(8):
-					matrixLeft.set_pixel(x, y, int(eyes[0][x][y]))
-					matrixRight.set_pixel(x, y, int(eyes[1][x][y]))
-			matrixLeft.write_display()
-			matrixRight.write_display()
-		except:
-			print('ledmatrix print error')
+			if stop_threads:
+				print('stopped')
+				matrixLeft.clear()
+				matrixLeft.write_display()
+				matrixRight.clear()
+				matrixRight.write_display()
+				break
+				
+			time.sleep(1)
+
+def writeEyes():
+	global stateEyes
+	if (len(activeButtons) > 0):
+		stateEyes = 1
+	else:
+		stateEyes = 0
 
 def writePoints():
 	global points, statusDoosDeksel
@@ -292,7 +331,9 @@ def loop():
 		time.sleep(1)
 
 def destroy():
+	global stop_threads
 	try:
+		stop_threads = True
 		for slot in gsmSlots:
 			GPIO.setup(slot[1], GPIO.LOW)
 		GPIO.setup(doosButton[1], GPIO.LOW)
@@ -316,5 +357,6 @@ if __name__ == '__main__':
 	setup()
 	try:
 		loop()
-	except KeyboardInterrupt:
+
+	except (KeyboardInterrupt):
 		destroy()
