@@ -74,7 +74,8 @@ Het scorebord en de activiteiten zitten in een SQLite database met een api erron
 ```
 sudo -s
 curl -sL https://deb.nodesource.com/setup_11.x | bash -
-apt-get install -y nodejs sqlite3
+exit
+sudo apt-get install -y nodejs sqlite3
 ```
 
 meer info op [https://dev.to/bogdaaamn/run-your-nodejs-application-on-a-headless-raspberry-pi-4jnn](https://dev.to/bogdaaamn/run-your-nodejs-application-on-a-headless-raspberry-pi-4jnn)
@@ -106,7 +107,9 @@ npm install pm2 -g
 In plaats van de server te starten via het `nodejs` commando, doe je dit nu via:
 
 ```
-pm2 start server.js
+pm2 start server.js --watch
+pm2 startup
+sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u pi --hp /home/pi
 ```
 
 De server draait nu als een service.
@@ -130,7 +133,8 @@ sudo apt-get install -y nginx
 configureren van je site:
 
 ```
-sudo vim /etc/nginx/sites-available/default
+sudo rm /etc/nginx/sites-available/default
+sudo nano /etc/nginx/sites-available/default
 
 server {
         listen 80;
@@ -152,7 +156,7 @@ server {
 }
 ```
 
-Herstart de webservice hierna:
+(Her)start de webservice hierna:
 
 ```
 sudo systemctl start nginx
