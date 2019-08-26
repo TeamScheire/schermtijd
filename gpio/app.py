@@ -13,7 +13,7 @@ from PIL import ImageDraw
 from PIL import ImageFont
 
 displayMode = True # debugmode for no displays
-oledMode = False
+oledMode = False # enable/disable the oled screen
 
 # Raspberry Pi pin configuration:
 RST = None     # on the PiOLED this pin isnt used
@@ -24,7 +24,7 @@ SPI_DEVICE = 0
 
 try:
 	print('testing I2C')
-	
+
 	if (oledMode):
 		# 128x32 display with hardware I2C:
 		disp = Adafruit_SSD1306.SSD1306_128_32(rst=RST)

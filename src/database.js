@@ -23,7 +23,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             )`, (err, rows) => {
             db.all(`SELECT COUNT() AS aantal FROM activiteit`, (err, rows) => {
                 if (rows[0].aantal == 0) {
-                    var insert = 'INSERT INTO activiteit (titel, beschrijving, aantal_min, aantal_max) VALUES (?,?)'
+                    var insert = 'INSERT INTO activiteit (titel, beschrijving, aantal_min, aantal_max) VALUES (?,?,?,?)'
                     db.run(insert, ["Gras afrijden", "Ga naar buiten en rij het gras af!", 1, 1])
                     db.run(insert, ["Kamer opruimen", "Ga naar boven en ruim je kamer op", 1, 2])
                     console.log('dummy activiteiten toegevoegd')
