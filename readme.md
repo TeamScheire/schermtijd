@@ -101,7 +101,7 @@ nodejs server.js
 Om de nodejs server als service te laten draaien (te daemonizen zoals ze zeggen) kan je pm2 gebruiken.
 
 ```
-npm install pm2 -g
+sudo npm install pm2 -g
 ```
 
 In plaats van de server te starten via het `nodejs` commando, doe je dit nu via:
@@ -159,7 +159,7 @@ server {
 (Her)start de webservice hierna:
 
 ```
-sudo systemctl start nginx
+sudo systemctl restart nginx
 
 ```
 
@@ -239,7 +239,7 @@ sudo python setup.py install
 Hierna kan je de displays aansluiten en via het volgende commando de adressen checken:
 
 ```
-sudo i2cdetect -y 0
+sudo i2cdetect -y 1
 ```
 
 
