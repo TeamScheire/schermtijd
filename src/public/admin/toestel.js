@@ -2,6 +2,7 @@ var API_ENDPOINT = API_URL + 'toestel/';
 
 var defaultToestel = {
     adres: '',
+    avatar: '',
     eigenaar: ''
 };
 
@@ -12,6 +13,7 @@ var index = function () {
         $.each(raw.data, function (index, data) {
             var html = '<tr data-id="' + data.id + '">';
             html += '<td>' + data.adres + '</td>';
+            html += '<td>' + data.avatar + '</td>';
             html += '<td>' + data.eigenaar + '</td>';
             html += '<td>' + data.score + '</td>';
             html += '<td>';
@@ -28,6 +30,7 @@ var index = function () {
 
 var fillDataForm = function (data) {
     $('#adres').val(data.adres);
+    $('#avatar').val(data.avatar);
     $('#eigenaar').val(data.eigenaar);
     $('#errorMessages').html('');
     $('#errorMessages').hide();

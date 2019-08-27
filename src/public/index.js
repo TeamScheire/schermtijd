@@ -5,6 +5,7 @@ var index = function () {
         $.each(raw.data, function (index, data) {
             var html = '<tr data-id="' + data._id + '">';
             html += '<td>' + data.adres + '</td>';
+            html += '<td>' + data.avatar + '</td>';
             html += '<td>' + data.eigenaar + '</td>';
             html += '<td>' + data.score + '</td>';
             html += '</tr>';

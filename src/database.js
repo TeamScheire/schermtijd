@@ -32,15 +32,16 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
         });
         db.run(`CREATE TABLE IF NOT EXISTS toestel (
             id INTEGER PRIMARY KEY,
+            avatar text,
             adres text,
             eigenaar text,
-            score text
+            score text,
             )`, (err, rows) => {
             db.all(`SELECT COUNT() AS aantal FROM toestel`, (err, rows) => {
                 if (rows[0].aantal == 0) {
-                    var insert = 'INSERT INTO toestel (id, adres, eigenaar, score) VALUES (?, ?, ?, 0)'
-                    for (i = 1; i <= 6; i++) {
-                        db.run(insert, [i, i, "Slot " + i])
+                    var insert = 'INSERT INTO toestel (id, avatar, adres, eigenaar, score) VALUES (?, ?, ?, ?, 0)'
+                    for (i = 1; i <= 4; i++) {
+                        db.run(insert, [i, "avatar " + i ,i, "Slot " + i])
                     }
                     console.log('toestellen toegevoegd')
                 }
