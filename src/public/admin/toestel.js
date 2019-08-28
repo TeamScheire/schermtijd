@@ -13,7 +13,7 @@ var index = function () {
         $.each(raw.data, function (index, data) {
             var html = '<tr data-id="' + data.id + '">';
             html += '<td>' + data.adres + '</td>';
-            html += '<td>' + data.avatar + '</td>';
+            html += '<td><img src="' + "." + data.avatar + '" alt="Error" height="50" width="50" style="border-radius: 50%" /></td>';
             html += '<td>' + data.eigenaar + '</td>';
             html += '<td>' + data.score + '</td>';
             html += '<td>';
