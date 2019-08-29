@@ -32,11 +32,12 @@ exports.new = (req, res) => {
     }
     var data = {
         adres: req.body.adres,
+        avatar: req.body.avatar,
         eigenaar: req.body.eigenaar,
         score: 0
     }
-    var sql = 'INSERT INTO toestel (adres, eigenaar, score) VALUES (?,?,?)'
-    var params = [data.adres, data.eigenaar, data.score]
+    var sql = 'INSERT INTO toestel (adres, avatar, eigenaar, score) VALUES (?,?,?,?)'
+    var params = [data.adres, data.avatar, data.eigenaar, data.score]
     db.run(sql, params, function (err, result) {
         if (err) {
             res.status(400).json({
@@ -74,14 +75,16 @@ exports.view = (req, res) => {
 exports.update = (req, res) => {
     var data = {
         adres: req.body.adres,
+        avatar: req.body.avatar,
         eigenaar: req.body.eigenaar
     }
     db.run(
         `UPDATE toestel set 
            adres = COALESCE(?,adres), 
+           avatar= COALESCE(?,avatar),
            eigenaar = COALESCE(?,eigenaar) 
            WHERE id = ?`,
-        [data.adres, data.eigenaar, req.params.id],
+        [data.adres, data.avatar, data.eigenaar, req.params.id],
         function (err, result) {
             if (err) {
                 res.json({
