@@ -44,7 +44,7 @@ network={
 Nadat je raspberry pi is opgestart, ga je ermee verbinden
 
 ```
-ssh pi@raspberry.local
+ssh pi@raspberrypi.local
 ```
 
 Het standaard wachtwoord is *raspberry*
