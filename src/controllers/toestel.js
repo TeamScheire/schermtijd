@@ -103,6 +103,33 @@ exports.update = (req, res) => {
     );
 };
 
+exports.updateAvatar = (req, res) => {
+    var data = {
+        avatar: req.body.newAvatar
+    }
+    db.run(
+        `UPDATE toestel set 
+           avatar = COALESCE(?,avatar)
+           WHERE id = ?`,
+        [data.avatar, req.params.id],
+        function (err, result) {
+            if (err) {
+                res.json({
+                    status: false,
+                    message: err
+                })
+                return;
+            }
+            res.json({
+                status: true,
+                message: 'toestel aangepast',
+                data: data,
+                changes: this.changes
+            })
+        }
+    );
+};
+
 exports.delete = (req, res) => {
     db.run(
         'DELETE FROM toestel WHERE id = ?',

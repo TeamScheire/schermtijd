@@ -40,8 +40,8 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             db.all(`SELECT COUNT() AS aantal FROM toestel`, (err, rows) => {
                 if ((rows) && (rows[0].aantal == 0)) {
                     var insert = 'INSERT INTO toestel (id, avatar, adres, eigenaar, score) VALUES (?, ?, ?, ?, 0)'
-                    for (i = 1; i <= 4; i++) {
-                        db.run(insert, [i,'./avatar/avatar' + i + '.jpg', i, "Slot " + i])
+                    for (i = 1; i <= 6; i++) {
+                        db.run(insert, [i, '/avatar/default.png', i, "Slot " + i])
                     }
                     console.log('toestellen toegevoegd')
                 }

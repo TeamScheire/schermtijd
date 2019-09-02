@@ -37,7 +37,7 @@ router.route('/toestel/:id')
     .put(toestelController.update)
     .delete(toestelController.delete);
 
-    
+
 var scoreController = require('../controllers/score');
 
 router.route('/toestel/:toestel_id/score')
@@ -51,9 +51,18 @@ var tijdslotController = require('../controllers/tijdslot');
 
 router.route('/tijdslot')
     .get(tijdslotController.index);
-    
+
 router.route('/tijdslot/:id')
     .patch(tijdslotController.update)
     .put(tijdslotController.update);
-    
+
+var uploadController = require('../controllers/upload');
+
+router.route('/toestel/uploadavatar')
+    .post(uploadController.upload);
+
+router.route('/toestel/:id/updateavatar')
+    .post(toestelController.updateAvatar)
+
+
 module.exports = router;
