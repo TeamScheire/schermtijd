@@ -227,7 +227,7 @@ def handleButton(buttonPin, ledPin, toestelNumber):
 	global activeButtons, debugMode
 	time.sleep(.1)
 	buttonStatus = GPIO.input(buttonPin)
-	print('gedrukt op pin: ' + buttonPin + ' - status: ' + buttonStatus)
+	print('gedrukt op pin: ' + str(buttonPin) + ' - status: ' + str(buttonStatus))
 	GPIO.output(ledPin, buttonStatus)
 	if (statusDoosDeksel == 1):
 		#debugmode toggle: als er een knop van de gsms wijzigt als de doos dicht is.
@@ -256,7 +256,7 @@ def handledoosButton(buttonPin, ledPin):
 	time.sleep(.1)
 	buttonStatus = GPIO.input(buttonPin)
 	GPIO.output(ledPin, buttonStatus)
-	print('deksel van de doos is veranderd: ' + buttonPin + ' - status: ' + buttonStatus)
+	print('deksel van de doos is veranderd: ' + str(buttonPin) + ' - status: ' + str(buttonStatus))
 	# als van dicht naar open
 	if ((statusDoosDeksel == 1) and (buttonStatus == 0)):
 		print('Doos is open gegaan')
@@ -287,7 +287,7 @@ def handleActiviteitButton(buttonPin, ledPin):
 	global statusPrinting, activeButtons, statusDoosDeksel
 	time.sleep(.1)
 	buttonStatus = GPIO.input(buttonPin)
-	print('Activiteitknop is ingedrukt: ' + buttonPin + ' - status: ' + buttonStatus)
+	print('Activiteitknop is ingedrukt: ' + str(buttonPin) + ' - status: ' + str(buttonStatus))
 	if ((statusPrinting == 0) and (buttonStatus == 1) and (len(activeButtons) >= 1) and (statusDoosDeksel == 1)):
 		print('action to print')
 		statusPrinting = 1
