@@ -18,6 +18,24 @@ exports.index = (req, res) => {
     });
 };
 
+exports.scorebord = (req, res) => {
+    var sql = "SELECT avatar, eigenaar, score FROM toestel ORDER BY score DESC"
+    var params = []
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            res.status(400).json({
+                "error": err.message
+            });
+            return;
+        }
+        res.json({
+            status: true,
+            message: "success",
+            data: rows
+        })
+    });
+};
+
 exports.new = (req, res) => {
     var errors = []
     if (!req.body.adres) {
