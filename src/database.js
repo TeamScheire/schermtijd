@@ -63,12 +63,12 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             db.all(`SELECT COUNT() AS aantal FROM toestel`, (err, rows) => {
                 if ((rows) && (rows[0].aantal == 0)) {
                     var insert = 'INSERT INTO toestel (avatar, adres, eigenaar, score) VALUES (?, ?, ?, 0)'
-                    db.run(insert, ['/avatar/mona.jpg', i, "Mona"])
-                    db.run(insert, ['/avatar/camille.jpg', i, "Camille"])
-                    db.run(insert, ['/avatar/default.png', i, "Juf Helga"])
-                    db.run(insert, ['/avatar/lieven.png', i, "Lieven"])
-                    db.run(insert, ['/avatar/deepak.jpg', i, "Deepak"])
-                    db.run(insert, ['/avatar/default.png', i, "Jos"])
+                    db.run(insert, ['/avatar/mona.jpg', 1, "Mona"])
+                    db.run(insert, ['/avatar/camille.jpg', 2, "Camille"])
+                    db.run(insert, ['/avatar/default.png', 3, "Juf Helga"])
+                    db.run(insert, ['/avatar/lieven.png', 4, "Lieven"])
+                    db.run(insert, ['/avatar/deepak.jpg', 5, "Deepak"])
+                    db.run(insert, ['/avatar/default.png', 6, "Jos"])
                     console.log('toestellen toegevoegd')
                 }
             })
