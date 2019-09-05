@@ -27,6 +27,9 @@ router.route('/activiteit/:id')
 
 var toestelController = require('../controllers/toestel');
 
+router.route('/scorebord')
+    .get(toestelController.scorebord);
+    
 router.route('/toestel')
     .get(toestelController.index)
     .post(toestelController.new);
