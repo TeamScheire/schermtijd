@@ -17,7 +17,7 @@ if (isNaN(aantal_deelnemers)) {
     return 0
 }
 
-var path = __dirname + '/logo-teamscheire.png';
+var path = __dirname + '/logo-ffb-print.png';
 
 serialPort.on('open', function () {
     printer.on('ready', function () {
