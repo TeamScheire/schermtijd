@@ -7,28 +7,57 @@
   <title>Scorebord</title>
 
   <link rel="stylesheet" href="includes/bootstrap.min.css">
+  <style>
+    #datatable.table td {
+      vertical-align: middle;
+      border: none;
+    }
+
+    .ranking {
+      color: #777;
+    }
+
+    .avatar, .score {
+      font-size: x-large;
+    }
+
+    .avatar img {
+      margin: 0 15px;
+    }
+
+    .container {
+      margin-top: 15px;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    a {
+      color: #555;
+    }
+  </style>
 </head>
 
 <body class="bg-light">
   <div class="container">
-    <div class="py-5 text-center">
-      <h1>Scorebord</h1>
-    </div>
-
     <div class="row">
-      <div class="col-md-12">
+      <div class="offset-3 col-6">
+        <div class="text-center">
+          <img src="logo-ffb.png" alt="Fast Friendsbox" />
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="offset-lg-3 col-lg-6 offset-md-2 col-md-8">
+        <div class="text-center">
+          <h1>Scorebord</h1>
+        </div>
         <table class="table" id="datatable">
-          <thead class="thead-light">
-            <tr>
-              <th scope="col">Toestel</th>
-              <th scope="col">Avatar</th>
-              <th scope="col">Eigenaar</th>
-              <th scope="col">Score</th>
-            </tr>
-          </thead>
           <tbody>
             <tr>
-              <td colspan="4"><em>aan het laden ...</em></td>
+              <td colspan="3"><em>aan het laden ...</em></td>
             </tr>
           </tbody>
         </table>
