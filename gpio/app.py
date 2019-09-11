@@ -127,6 +127,7 @@ def setup():
 	eyesThread = Thread(target=animateEyes, args=(stateEyes,))
 	eyesThread.start()
 
+	time.sleep(2) # give de api some time to boot
 	currentHour = getScoreHour()
 	resetPoints()
 
@@ -139,10 +140,14 @@ def getScoreHour():
 	global currentHour, currentScoreWeight
 	now = datetime.datetime.now()
 	if (currentHour != now.hour):
-		currentHour = now.hour
-		url = apiurl + 'tijdslot/{}'.format(currentHour)
+		url = apiurl + 'tijdslot/{}'.format(now.hour)
 		print('api call: ' + url)
-		response = requests.get(url)
+		try:
+			response = requests.get(url)
+			currentHour = now.hour
+		except:
+			print('api not ready')
+
 		print(response)
 		print(response.data.gewicht)
 	return currentHour
@@ -415,7 +420,7 @@ def handledoosButton(buttonPin, ledPin):
 def printActiviteit(activeButtons, ledPin):
 	global statusPrinting
 	print('printing ...')
-	cmd = "nodejs ~/src/print.js {}".format(len(activeButtons))
+	cmd = "/usr/bin/nodejs /home/pi/src/print.js {}".format(len(activeButtons))
 	result = subprocess.check_output(cmd, shell = True )
 	print('done printing')
 	statusPrinting = 0

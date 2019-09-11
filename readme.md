@@ -103,19 +103,36 @@ nodejs server.js
 
 ## automatisch starten en uitvoeren in de achtergrond van de server
 
-Om de nodejs server als service te laten draaien (te daemonizen zoals ze zeggen) kan je forever gebruiken.
-
 ```
-sudo npm install forever -g
-```
-
-In plaats van de server te starten via het `nodejs` commando, doe je dit nu via:
-
-```
-forever start ~/src/server.js
+cd /lib/systemd/system/
+sudo nano doosserver.service
 ```
 
-Schrijf dit commando ook onderaan je `.bashrc` file zodat het iedere keer uitgevoerd wordt als de raspberry pi opstart.
+Vul deze gegevens in:
+
+```
+[Unit]
+Description=Doos gpio
+After=multi-user.target
+ 
+[Service]
+Type=simple
+ExecStart=/usr/bin/nodejs /home/pi/src/server.js
+Restart=on-abort
+ 
+[Install]
+WantedBy=multi-user.target
+```
+
+En dan dit uitvoeren:
+
+```
+sudo chmod 644 /lib/systemd/system/doosserver.service
+chmod +x /home/pi/src/server.js
+sudo systemctl daemon-reload
+sudo systemctl enable doosserver.service
+sudo systemctl start doosserver.service
+```
 
 De nodejs server draait nu als een service.
 
