@@ -89,7 +89,7 @@ statusDoosDeksel = 0 # 0 = open, 1 = gesloten
 statusPrinting = 0
 activeButtons = []
 points = 0
-stateEyes = 0
+stateEyes = 'sad'
 stopEyes = False
 
 apiurl = 'http://localhost:3000/api/'
@@ -124,55 +124,90 @@ def setup():
 	resetPoints()
 	print('loaded ...')
 
+def millis():
+	return int(round(time.time() * 1000))
+
 def animateEyes(dummyvar):
 	global stateEyes, stopEyes
 	if (displayMode):
-		eyesTemplate = [
-			[# droeving, geen gsm in een slot
-				[
-					['00000000', '00000000', '11111110', '11111110', '11000110', '01111100', '00000000', '00000000'],
-					['00000000', '00000000', '01111111', '01111111', '01100011', '00111110', '00000000', '00000000']
-				],
+		eyesTemplates = {
+			'heart': {
+				'delay': 250,
+				'loop': 2,
+				'nextTemplate': 'beatingHeart',
+				'stopPrevious': True,
+				'sequences': [
 					[
-					['00000000', '00000000', '00000000', '11111110', '11111110', '11000110', '01111100', '00000000'],
-					['00000000', '00000000', '00000000', '01111111', '01111111', '01100011', '00111110', '00000000']
-				]
-			],
-			[# happy, een gsm in een slot
-				[
-					['00111000', '01111100', '11111110', '11000110', '11000110', '11111110', '01111100', '00000000'],
-					['00011100', '00111110', '01111111', '01100011', '01100011', '01111111', '00111110', '00000000']
-				],
+						['00000000', '00000000', '00000000', '00011000', '00011000', '00000000', '00000000', '00000000'],
+						['00000000', '00000000', '00000000', '00011000', '00011000', '00000000', '00000000', '00000000']
+					],
 					[
-					['00000000', '00111000', '01111100', '11111110', '11000110', '11000110', '11111110', '01111100'],
-					['00000000', '00011100', '00111110', '01111111', '01100011', '01100011', '01111111', '00111110']
+						['00000000', '00000000', '00011000', '00111100', '00111100', '00011000', '00000000', '00000000'],
+						['00000000', '00000000', '00011000', '00111100', '00111100', '00011000', '00000000', '00000000']						
+					],
+					[
+						['00000000', '01100110', '11111111', '11111111', '01111110', '00111100', '00011000', '00000000'],
+						['00000000', '01100110', '11111111', '11111111', '01111110', '00111100', '00011000', '00000000']
+					]
 				]
-			],
-			[# hartje
-				[
-					['00000000', '01100110', '11111111', '11111111', '01111110', '00111100', '00011000', '00000000'],
-					['00000000', '01100110', '11111111', '11111111', '01111110', '00111100', '00011000', '00000000']
+			},
+ 			'beatingHeart': {
+				'delay': 300,
+				'loop': 2,
+                'nextTemplate': 'happy',
+				'stopPrevious': False,
+				'sequences': [
+					[
+						['00000000', '00000000', '00011000', '00111100', '00111100', '00011000', '00000000', '00000000'],
+						['00000000', '00000000', '00011000', '00111100', '00111100', '00011000', '00000000', '00000000']						
+					],
+					[
+						['00000000', '01100110', '11111111', '11111111', '01111110', '00111100', '00011000', '00000000'],
+						['00000000', '01100110', '11111111', '11111111', '01111110', '00111100', '00011000', '00000000']
+					]
 				]
-			]
-		]
+			},
+ 			'happy': {
+				'delay': 1500,
+				'loop': 0,
+                'nextTemplate': 'happy',
+				'stopPrevious': False,
+				'sequences': [
+					[
+						['00111000', '01111100', '11111110', '11000110', '11000110', '11111110', '01111100', '00000000'],
+						['00011100', '00111110', '01111111', '01100011', '01100011', '01111111', '00111110', '00000000']
+					],
+					[
+						['00000000', '00111000', '01111100', '11111110', '11000110', '11000110', '11111110', '01111100'],
+						['00000000', '00011100', '00111110', '01111111', '01100011', '01100011', '01111111', '00111110']
+					]
+				]
+			},     
+ 			'sad': {
+				'delay': 6000,
+				'loop': 0,
+                'nextTemplate': 'sad',
+				'stopPrevious': True,
+				'sequences': [
+					[
+						['00000000', '00000000', '11111110', '11111110', '11000110', '01111100', '00000000', '00000000'],
+						['00000000', '00000000', '01111111', '01111111', '01100011', '00111110', '00000000', '00000000']
+					],
+						[
+						['00000000', '00000000', '00000000', '11111110', '11111110', '11000110', '01111100', '00000000'],
+						['00000000', '00000000', '00000000', '01111111', '01111111', '01100011', '00111110', '00000000']
+					]
+				]
+			},     
+		}
 
-		eyesSequence = 1
-		print(stateEyes)
-		while True:
-			eyesSequence = 1 - eyesSequence
-			eyes = eyesTemplate[stateEyes][eyesSequence]
-			try:
-				matrixLeft.clear()
-				matrixRight.clear()
-				for x in range(8):
-					for y in range(8):
-						matrixLeft.set_pixel(x, y, int(eyes[0][x][y]))
-						matrixRight.set_pixel(x, y, int(eyes[1][x][y]))
-				matrixLeft.write_display()
-				matrixRight.write_display()
-			except:
-				print('ledmatrix print error')
+		currentStateEyes = ''
+        eyesSequence = 0
+        lastMillis = 0
+        delay = 0
+        currentLoop = 0
 
+        while True:
 			if stopEyes:
 				print('stopped')
 				matrixLeft.clear()
@@ -181,14 +216,54 @@ def animateEyes(dummyvar):
 				matrixRight.write_display()
 				break
 
-			time.sleep(1)
+			if (currentStateEyes):
+				try:
+					if ((lastMillis + delay) < millis()):
+						lastMillis = millis()
+						eyes = eyesTemplates[currentStateEyes]['sequences'][eyesSequence]
+
+						matrixLeft.clear()
+						matrixRight.clear()
+						for x in range(8):
+							for y in range(8):
+								matrixLeft.set_pixel(x, y, int(eyes[0][x][y]))
+								matrixRight.set_pixel(x, y, int(eyes[1][x][y]))
+						matrixLeft.write_display()
+						matrixRight.write_display()
+
+						sequenceCount = len(eyesTemplates[stateEyes]['sequences'])
+						eyesSequence = eyesSequence + 1
+						#print('sequencecount: ' + str(sequenceCount))
+						#print('next sequence: ' + str(eyesSequence))
+						#print('current loop: ' + str(currentLoop))
+						#print('# loops: ' + str(eyesTemplates[stateEyes]['loop']))
+						if (eyesSequence >= sequenceCount):
+							currentLoop = currentLoop + 1
+							eyesSequence = 0
+							if ((eyesTemplates[stateEyes]['loop'] > 0) and (currentLoop >= eyesTemplates[stateEyes]['loop'])):
+								#print('next template')
+								stateEyes = eyesTemplates[stateEyes]['nextTemplate']
+							#else:
+								#print('next loop')
+				except:
+					print('ledmatrix print error')
+
+			if (stateEyes != currentStateEyes):
+				print('new state: ' + stateEyes)
+				delay = eyesTemplates[stateEyes]['delay']
+				currentStateEyes = stateEyes
+				eyesSequence = 0
+				currentLoop = 0
+				if (eyesTemplates[stateEyes]['stopPrevious']):
+					lastMillis = 0
+
 
 def writeEyes():
 	global stateEyes
 	if (len(activeButtons) > 0):
-		stateEyes = 1
+		stateEyes = 'heart'
 	else:
-		stateEyes = 0
+		stateEyes = 'sad'
 
 def writePoints():
 	global points, statusDoosDeksel
@@ -248,6 +323,7 @@ def writeScore(slotNumber):
 		'bericht': 'punten verdiend via de doos!'
 	}
 	url = apiurl + 'toestel/{}/score'.format(slotNumber)
+	print('api call: ' + url)
 	response = requests.post(url, data=data)
 	print(response.json())
 
@@ -302,7 +378,7 @@ def drawOled():
 		draw.rectangle((0,0,width,height), outline=0, fill=0)
 
 		if (debugMode == 1):
-			# Shell scripts for system monitoring from here : https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-usage-and-cpu-load
+			# Shell scripts for system monitoring source: https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-usage-and-cpu-load
 			cmd = "hostname -I | cut -d\' \' -f1"
 			IP = subprocess.check_output(cmd, shell = True )
 			cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
