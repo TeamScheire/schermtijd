@@ -18,7 +18,7 @@ var index = function () {
             var handle = $('#sliderhandle-' + data.id);
             $('#slider-' + data.id).slider({
                 value: data.gewicht,
-                min: 1,
+                min: 0,
                 max: 5,
                 step: 1,
                 create: function () {

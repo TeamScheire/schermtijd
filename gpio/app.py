@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sched, time, requests, subprocess
+import sched, time, datetime, requests, subprocess
 from threading import Thread
 import RPi.GPIO as GPIO
 from Adafruit_LED_Backpack import SevenSegment
@@ -89,6 +89,11 @@ statusDoosDeksel = 0 # 0 = open, 1 = gesloten
 statusPrinting = 0
 activeButtons = []
 points = 0
+currentHour = -1
+currentScoreWeight = 0
+lastScoreMillis = 0
+scoreStartMillis = 0
+scoreDelay = 1
 stateEyes = 'sad'
 stopEyes = False
 
@@ -97,7 +102,7 @@ debugMode = 0
 eyesThread = False
 
 def setup():
-	global eyesThread
+	global eyesThread, scoreStartMillis, currentHour
 	GPIO.setmode(GPIO.BCM)
 
 	for slot in gsmSlots:
@@ -121,11 +126,26 @@ def setup():
 	
 	eyesThread = Thread(target=animateEyes, args=(stateEyes,))
 	eyesThread.start()
+
+	currentHour = getScoreHour()
 	resetPoints()
+
 	print('loaded ...')
 
 def millis():
 	return int(round(time.time() * 1000))
+
+def getScoreHour():
+	global currentHour, currentScoreWeight
+	now = datetime.datetime.now()
+	if (currentHour != now.hour):
+		currentHour = now.hour
+		url = apiurl + 'tijdslot/{}'.format(currentHour)
+		print('api call: ' + url)
+		response = requests.get(url)
+		print(response)
+		print(response.data.gewicht)
+	return currentHour
 
 def animateEyes(dummyvar):
 	global stateEyes, stopEyes
@@ -285,15 +305,49 @@ def resetPoints():
 	points = 0
 	writePoints()
 
+def getScoreHour():
+	global currentHour, currentScoreWeight
+	now = datetime.datetime.now()
+	if (currentHour != now.hour):
+		currentHour = now.hour
+		url = apiurl + 'tijdslot/{}'.format(currentHour)
+		print('api call: ' + url)
+		response = requests.get(url)
+		responsedata = response.json()
+		currentScoreWeight = responsedata['data']['gewicht']
+	return currentHour
+
 def incrementPoints():
-	global points, activeButtons
-	# TODO algoritme voor punten finetunen
-	points = points + len(activeButtons)
-	writePoints()
+	global points, activeButtons, currentScoreWeight, lastScoreMillis, scoreStartMillis
+
+	scoreDelay = (20 - (2 * currentScoreWeight)) * 1000
+
+	if ((millis() - scoreStartMillis) < 30000):
+		scoreDelay = scoreDelay / 2
+	if ((millis() - scoreStartMillis) < 20000):
+		scoreDelay = scoreDelay / 3
+	if ((millis() - scoreStartMillis) < 10000):
+		if ((scoreDelay / 4) > 1000):
+			scoreDelay = (scoreDelay / 4)
+		else:
+			scoreDelay = 1000
+	if ((millis() - scoreStartMillis) < 5000):
+		scoreDelay = 1000
+
+	print('current millis: ' + str(millis()))
+	print('current scoreStartMillis: ' + str(scoreStartMillis))
+	print('current score delay: ' + str(scoreDelay))
+
+	if (lastScoreMillis + scoreDelay < millis()):
+		lastScoreMillis = millis()
+		points = points + len(activeButtons)
+		print(points)
+		writePoints()
 
 def calculatePoints():
 	global activeButtons, statusDoosDeksel
 	if ((statusDoosDeksel == 1) and (len(activeButtons) > 0)):
+		getScoreHour()
 		incrementPoints()
 	else:
 		resetPoints()
@@ -328,15 +382,23 @@ def writeScore(slotNumber):
 	print(response.json())
 
 def handledoosButton(buttonPin, ledPin):
-	global statusDoosDeksel, points
+	global statusDoosDeksel, points, scoreStartMillis
 	time.sleep(.1)
 	buttonStatus = GPIO.input(buttonPin)
 	GPIO.output(ledPin, buttonStatus)
 	print('deksel van de doos is veranderd: ' + str(buttonPin) + ' - status: ' + str(buttonStatus))
+
+	# als van open naar dicht
+	if ((statusDoosDeksel == 0) and (buttonStatus == 1)):
+		print('Doos is toe gegaan')
+		print(activeButtons)
+		scoreStartMillis = millis()
+
 	# als van dicht naar open
 	if ((statusDoosDeksel == 1) and (buttonStatus == 0)):
 		print('Doos is open gegaan')
 		print(activeButtons)
+		statusDoosDeksel = buttonStatus
 
 		if (points > 0):
 			data = {
@@ -414,7 +476,7 @@ def loop():
 		calculatePoints()
 		if (oledMode):
 			drawOled()
-		time.sleep(1)
+		time.sleep(.5)
 
 def destroy():
 	global stopEyes

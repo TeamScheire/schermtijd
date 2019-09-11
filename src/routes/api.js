@@ -29,7 +29,7 @@ var toestelController = require('../controllers/toestel');
 
 router.route('/scorebord')
     .get(toestelController.scorebord);
-    
+
 router.route('/toestel')
     .get(toestelController.index)
     .post(toestelController.new);
@@ -54,6 +54,9 @@ var tijdslotController = require('../controllers/tijdslot');
 
 router.route('/tijdslot')
     .get(tijdslotController.index);
+
+router.route('/tijdslot/:startuur')
+    .get(tijdslotController.currentWeight);
 
 router.route('/tijdslot/:id')
     .patch(tijdslotController.update)

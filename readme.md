@@ -80,6 +80,11 @@ sudo apt-get install -y nodejs sqlite3
 
 meer info op [https://dev.to/bogdaaamn/run-your-nodejs-application-on-a-headless-raspberry-pi-4jnn](https://dev.to/bogdaaamn/run-your-nodejs-application-on-a-headless-raspberry-pi-4jnn)
 
+### ImageMagic voor de verwerking van de avatars
+
+```
+sudo apt-get install imagemagick
+```
 
 ## Activeren/installeren van de api en frontend
 
@@ -98,29 +103,22 @@ nodejs server.js
 
 ## automatisch starten en uitvoeren in de achtergrond van de server
 
-Om de nodejs server als service te laten draaien (te daemonizen zoals ze zeggen) kan je pm2 gebruiken.
+Om de nodejs server als service te laten draaien (te daemonizen zoals ze zeggen) kan je forever gebruiken.
 
 ```
-sudo npm install pm2 -g
+sudo npm install forever -g
 ```
 
 In plaats van de server te starten via het `nodejs` commando, doe je dit nu via:
 
 ```
-pm2 start server.js --watch
-pm2 startup
-sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u pi --hp /home/pi
+forever start ~/src/server.js
 ```
 
-De server draait nu als een service.
+Schrijf dit commando ook onderaan je `.bashrc` file zodat het iedere keer uitgevoerd wordt als de raspberry pi opstart.
 
-Je kan de status bekijken of de service stoppen of opnieuw starten via volgende commando's:
+De nodejs server draait nu als een service.
 
-```
-pm2 list
-pm2 stop 0
-pm2 start 0
-```
 
 ## nginx
 
@@ -210,9 +208,6 @@ Via `npm install` heb je deze requirement normaal gezien al geïnstalleerd.
 
 ## LED displays
 
-
-
-
 I2C is een protocol waarbij je tot 8 elementen in een bus kan koppelen aan één seriele bus.
 Je moet dit protocol eerst activeren op de raspberry pi via raspi-config:
 
@@ -230,6 +225,11 @@ git clone https://github.com/adafruit/Adafruit_Python_LED_Backpack.git # voor de
 cd Adafruit_Python_LED_Backpack
 sudo python setup.py install
 cd ..
+```
+
+Optioneel (in de uiteindelijke doos zit deze er niet meer in)
+
+```
 git clone https://github.com/adafruit/Adafruit_Python_SSD1306.git # voor de oled
 cd Adafruit_Python_SSD1306/
 sudo python setup.py install
@@ -242,7 +242,6 @@ Hierna kan je de displays aansluiten en via het volgende commando de adressen ch
 sudo i2cdetect -y 1
 ```
 
-
 Je krijgt iets in deze aard:
 
 ```
@@ -251,25 +250,14 @@ pi@schermtijd01:~ $ i2cdetect -y 1
 00:          -- -- -- -- -- -- -- -- -- -- -- -- --
 10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-30: -- -- -- -- -- -- -- -- -- -- -- -- 3c -- -- --
+30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 70: 70 71 72 -- -- -- -- --
 ```
 
-Adres 70, 71 en 3c zijn ingebruik
-
-
-### 7-segment display
-
-### 8X8 matrix
-
-### oled SSD1306
-[Dit oled display wordt gebruikt](https://www.ebay.com/itm/IIC-I2C-0-91-128x32-White-OLED-LCD-Display-Module-DC-3-3V-5V-For-Arduino-PIC/332047978840).
-
-
-
+Adres 70, 71 en 72 zijn ingebruik
 
 Nog python packet requests installeren om api calls te kunnen doen:
 
@@ -291,6 +279,39 @@ Aansluitingen:
 
 python library:
 [https://github.com/adafruit/Adafruit_Python_LED_Backpack](https://github.com/adafruit/Adafruit_Python_LED_Backpack)
+
+### Python script as service
+
+```
+cd /lib/systemd/system/
+sudo nano doos.service
+```
+
+Vul deze gegevens in:
+
+```
+[Unit]
+Description=Doos gpio
+After=multi-user.target
+ 
+[Service]
+Type=simple
+ExecStart=/usr/bin/python /home/pi/gpio/app.py
+Restart=on-abort
+ 
+[Install]
+WantedBy=multi-user.target
+```
+
+En dan dit uitvoeren:
+
+```
+sudo chmod 644 /lib/systemd/system/doos.service
+chmod +x /home/pi/gpio/app.py
+sudo systemctl daemon-reload
+sudo systemctl enable doos.service
+sudo systemctl start doos.service
+```
 
 ## PCB voor de doos
 

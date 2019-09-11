@@ -22,7 +22,6 @@ exports.update = (req, res) => {
     var data = {
         gewicht: req.body.gewicht
     }
-    console.log(data);
     db.run(
         `UPDATE tijdslot set 
            gewicht = COALESCE(?,gewicht) 
@@ -45,3 +44,33 @@ exports.update = (req, res) => {
         }
     );
 };
+
+exports.currentWeight = (req, res) => {
+    var errors = []
+    if (!req.params.startuur) {
+        errors.push("Geef een startuur door");
+    }
+    if (errors.length) {
+        res.json({
+            status: false,
+            message: errors
+        });
+        return;
+    }
+    var sql = "SELECT * FROM tijdslot WHERE startuur = ?"
+    var params = [req.params.startuur];
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            res.status(400).json({
+                "error": err.message
+            });
+            return;
+        }
+        res.json({
+            status: true,
+            message: "success",
+            data: rows[0]
+        })
+    });
+
+}
