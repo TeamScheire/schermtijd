@@ -19,7 +19,7 @@ exports.index = (req, res) => {
 };
 
 exports.scorebord = (req, res) => {
-    var sql = "SELECT avatar, eigenaar, score FROM toestel ORDER BY score DESC"
+    var sql = "SELECT avatar, eigenaar, score, adres FROM toestel ORDER BY score DESC, adres ASC"
     var params = []
     db.all(sql, params, (err, rows) => {
         if (err) {

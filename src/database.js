@@ -24,8 +24,8 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             db.all(`SELECT COUNT() AS aantal FROM activiteit`, (err, rows) => {
                 if (rows[0].aantal == 0) {
                     var insert = 'INSERT INTO activiteit (titel, beschrijving, locatie, tijdstip, aantal_min, aantal_max, materiaal) VALUES (?,?,?,?,?,?,?)'
-                    db.run(insert, ['vaatwas leegmaken ', 'alles op de plaats zetten ', 'binnen', 'altijd', '1', '3', 'vaatwas']);
-                    db.run(insert, ['touwtje springen ', 'over een touw springen \nleuk om met meer te springen ', 'buiten', 'altijd', '1', '8', 'springtouw']);
+                    db.run(insert, ['vaatwas leegmaken', 'alles op de plaats zetten ', 'binnen', 'altijd', '1', '3', 'vaatwas']);
+                    db.run(insert, ['touwtje springen', 'over een touw springen \nleuk om met meer te springen ', 'buiten', 'altijd', '1', '8', 'springtouw']);
                     db.run(insert, ['uno', 'deel de kaarten, elk 7\nwie als eerste geen kaarten meer heeft is gewonnen\nvergeet geen uno te zeggen bij de laatste kaart!!', 'overal', 'altijd', '2', '8', 'uno kaartspel']);
                     db.run(insert, ['bliklopen', 'haal per persoon 2 blikken, maak er 2 gaten in langs de zijkant op dezelfde hoogte. steek daar dan een lang genoeg touw door zodat als je op de blikken staat dat je de touwen in je hand kan nemen. maak daarna een start en een finish. 3 2 1 start!!', 'overal', 'overdag', '2', '8', 'blikken\ntouw\nstart\nfinish']);
                     db.run(insert, ['kaarten : manillen ', 'je zet je schuin over elkaar \nje deelt de kaarten 3 2 3 \nde gene die na de gene zit die deelt die mag troef kiezen \nde gene die na de gene die troef heeft gekozen \ndie mag de begin kaart opleggen \nde gene die de slag wint\n die mag de volgende kaart  opleggen \n', 'overal', 'altijd', '4', '4', 'Spel kaarten ']);
@@ -65,10 +65,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                     var insert = 'INSERT INTO toestel (avatar, adres, eigenaar, score) VALUES (?, ?, ?, 0)'
                     db.run(insert, ['/avatar/mona.jpg', 1, "Mona"])
                     db.run(insert, ['/avatar/camille.jpg', 2, "Camille"])
-                    db.run(insert, ['/avatar/default.png', 3, "Juf Helga"])
-                    db.run(insert, ['/avatar/lieven.png', 4, "Lieven"])
-                    db.run(insert, ['/avatar/deepak.jpg', 5, "Deepak"])
-                    db.run(insert, ['/avatar/default.png', 6, "Jos"])
+                    db.run(insert, ['/avatar/hannah.jpg', 3, "Hannah"])
+                    db.run(insert, ['/avatar/tiamo.jpg', 4, "Tiamo"])
+                    db.run(insert, ['/avatar/lieven.jpg', 5, "Lieven"])
+                    db.run(insert, ['/avatar/deepak.jpg', 6, "Deepak"])
                     console.log('toestellen toegevoegd')
                 }
             })
