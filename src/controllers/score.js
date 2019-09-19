@@ -84,13 +84,18 @@ exports.delete = (req, res) => {
                 })
                 return;
             }
-            var sql = 'UPDATE toestel SET score = (SELECT SUM(score) FROM score WHERE toestel_id = ?) WHERE id = ?';
-            var params = [req.params.toestel_id, req.params.toestel_id]
-            db.run(sql, params, function (err, result) {
-                res.json({
-                    status: true,
-                    message: 'Score gewist'
-                })
+            var sql = "SELECT SUM(score) AS totaalscore FROM score WHERE toestel_id = ?";
+            var params = [req.params.toestel_id];
+            db.all(sql, params, (err, rows) => {
+                var totaalscore = (rows[0].totaalscore) ? rows[0].totaalscore : 0;
+                var sql = 'UPDATE toestel SET score = ? WHERE id = ?';
+                var params = [totaalscore, req.params.toestel_id]
+                db.run(sql, params, function (err, result) {
+                    res.json({
+                        status: true,
+                        message: 'Score gewist'
+                    })
+                });
             });
         }
     );
