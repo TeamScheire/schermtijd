@@ -72,6 +72,40 @@ exports.newScore = (req, res) => {
     });
 };
 
+exports.newDoosScore = (req, res) => {
+    if (req.body.adressen) {
+        var adressen = (Array.isArray(req.body.adressen)) ? req.body.adressen : [req.body.adressen];
+        console.log(adressen);
+        adressen.forEach(function (adres) {
+            var data = {
+                adres: adres,
+                score: req.body.score,
+                bericht: req.body.bericht
+            }
+            console.log(data);
+            var sql = 'INSERT INTO score (toestel_id, score, bericht, datum) VALUES (?, ?, ?, CURRENT_TIMESTAMP)'
+            var params = [data.adres, data.score, data.bericht]
+            db.run(sql, params, function (err, result) {
+                if (err) {
+                    res.status(400).json({
+                        "error": err.message
+                    })
+                    return;
+                }
+                var sql = 'UPDATE toestel SET score = score + ? WHERE id = ?'
+                var params = [data.score, data.adres]
+                db.run(sql, params, function (err, result) {
+                    console.log('Nieuwe score toegevoegd!');
+                })
+            });
+        });
+        res.json({
+            status: true,
+            message: 'Nieuwe score toegevoegd!'
+        })
+    }
+};
+
 exports.delete = (req, res) => {
     db.run(
         'DELETE FROM score WHERE id = ?',

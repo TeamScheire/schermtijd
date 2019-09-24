@@ -24,7 +24,6 @@ router.route('/activiteit/:id')
     .put(activiteitController.update)
     .delete(activiteitController.delete)
 
-
 var toestelController = require('../controllers/toestel');
 
 router.route('/scorebord')
@@ -42,6 +41,9 @@ router.route('/toestel/:id')
 
 
 var scoreController = require('../controllers/score');
+
+router.route('/toestel/doosscore')
+    .post(scoreController.newDoosScore);
 
 router.route('/toestel/:toestel_id/score')
     .get(scoreController.viewScore)

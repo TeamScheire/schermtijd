@@ -35,12 +35,12 @@ except Exception as e:
 
 gsmSlots = [
 	# buttonpin, ledpin, toestelnumber
-	[4, 18, 1],
-	[17, 23, 2],
-	[27, 24, 3],
-	[22, 25, 4],
-	[6, 12, 5],
-	[13, 16, 6]
+	[13, 16, 1],
+	[6, 12, 2],
+	[22, 25, 3],
+	[27, 24, 4],
+	[17, 23, 5],
+	[4, 18, 6],
 ]
 
 doosButton = [19, 20] # gpio poort waarop de knop van het deksel van de doos aangesloten is, status led
@@ -314,19 +314,8 @@ def handleButton(buttonPin, ledPin, toestelNumber):
 			activeButtons.remove(toestelNumber)
 	writeEyes()
 
-def writeScore(slotNumber):
-	global points
-	data = {
-		'score': points,
-		'bericht': 'punten verdiend via de doos!'
-	}
-	url = apiurl + 'toestel/{}/score'.format(slotNumber)
-	print('api call: ' + url)
-	response = requests.post(url, data=data)
-	print(response.json())
-
 def handledoosButton(buttonPin, ledPin):
-	global statusDoosDeksel, points, scoreStartMillis
+	global statusDoosDeksel, points, scoreStartMillis, activeButtons
 	time.sleep(.1)
 	buttonStatus = GPIO.input(buttonPin)
 	GPIO.output(ledPin, buttonStatus)
@@ -349,12 +338,13 @@ def handledoosButton(buttonPin, ledPin):
 		if (points > 0):
 			data = {
 				'score': points,
-				'bericht': 'punten verdiend via de doos!'
+				'bericht': 'punten verdiend via de doos!',
+				'adressen': activeButtons
 			}
-
-			for slotNumber in activeButtons:
-				print(slotNumber)
-				writeScore(slotNumber)
+			url = apiurl + 'toestel/doosscore'
+			print('api call: ' + url)
+			response = requests.post(url, data=data)
+			print(response.json())
 
 	statusDoosDeksel = buttonStatus
 
