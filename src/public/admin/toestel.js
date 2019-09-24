@@ -30,7 +30,7 @@ var index = function () {
 
 var fillDataForm = function (data) {
     $('#adres').val(data.adres);
-    $('#avatar').val(data.avatar);
+    //$('#avatar').val(data.avatar);
     $('#eigenaar').val(data.eigenaar);
     $('#errorMessages').html('');
     $('#errorMessages').hide();
