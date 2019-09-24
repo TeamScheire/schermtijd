@@ -21,7 +21,8 @@ var path = __dirname + '/logo-ffb-print.png';
 
 serialPort.on('open', function () {
     printer.on('ready', function () {
-        activiteitController.getRandomActiviteit(2, (activiteit) => {
+        activiteitController.getRandomActiviteit(aantal_deelnemers, (activiteit) => {
+            console.log(activiteit);
             try {
                 printer.printImage(path);
                 printer.printLine(' ');
