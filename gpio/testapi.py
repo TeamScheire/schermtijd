@@ -59,6 +59,24 @@ def incrementPoints():
 		print(points)
 	    #writePoints()
 
+def doeScore():
+	global activeButtons
+	activeButtons.append(2)
+	activeButtons.append(3)
+	activeButtons.append(4)
+	activeButtons.append(5)
+	activeButtons.append(6)
+	print(activeButtons)
+	data = {
+		'score': 322,
+		'bericht': 'punten verdiend via de doos!',
+		'adressen': activeButtons
+	}
+	url = apiurl + 'toestel/doosscore'
+	print('api call: ' + url)
+	response = requests.post(url, data=data)
+	print(response.json())
+
 def loop():
 	while True:
 		getScoreHour()
@@ -71,7 +89,7 @@ def destroy():
 if __name__ == '__main__':
 	setup()
 	try:
-		loop()
+		doeScore()
 
 	except (KeyboardInterrupt):
 		destroy()
