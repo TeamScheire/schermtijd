@@ -1,13 +1,24 @@
-## Download en installeer de raspbian versie naar keuze.
+Bekijk het lijstje van alle materiaal: [bill of materials](docs/bill-of-materials.csv)
+
+
+## Download en installeer raspbian
 
 Via [https://www.raspberrypi.org/downloads/raspbian/](https://www.raspberrypi.org/downloads/raspbian)
 
-## Configureren van SD-card
+De lite versie is voldoende.
 
-Op je eigen laptop. 
-De commando's zijn voor mac/linux.
+Instructies om raspbian op een sd-kaart te zetten staan ook op die pagina.
 
-Alles in de root folder van de SD-kaart
+## Configureren van de sd-kaart
+
+Nadat je raspbian op een SD-kaart hebt, moet je deze nog configureren zodat je via ssh over de wifi aan de raspberry pi kan.
+
+Deze stappen voer je dus uit op je eigen computer, met de sd-kaart ingestoken. 
+
+De commando's zijn voor terminal op mac/linux.
+
+
+### navigaar naar de folder van de SD-kaart
 
 ```
 cd /Volumes/boot
@@ -27,8 +38,7 @@ touch ssh
 vim wpa_supplicant.conf
 ```
 
-For Raspbian:
-Enter the ssid and passphrase for the wifi
+Vul volgende gegevens in (vervang de xxxx'n door je eigen SSID en wachtwoord) en sla op
 
 ```
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
@@ -39,7 +49,8 @@ network={
 }
 ```
 
-## Config on raspi
+## Configuratie op de raspberry pi
+
 
 Nadat je raspberry pi is opgestart, ga je ermee verbinden
 
@@ -49,20 +60,22 @@ ssh pi@raspberrypi.local
 
 Het standaard wachtwoord is *raspberry*
 
-### Update filesystem
+### Update van het systeem
 
 ```
 sudo apt-get update && sudo apt-get -y upgrade
 ```
 
-### raspi-config
+### Raspi-config
 
 ```
 sudo raspi-config
 ```
 
+Kies: 
+
 - Expand Filesystem
-- Change hostname
+- Change hostname: fastfriendsbox
 - Set Timezone
 
 reboot
@@ -155,7 +168,7 @@ server {
         listen 80;
         listen [::]:80;
 
-        server_name schermtijd01.local;
+        server_name fastfriendsbox.local;
 
         root /var/www/;
         index index.html;
@@ -178,7 +191,7 @@ sudo systemctl restart nginx
 
 ```
 
-Nu kan je van eender welk toestel dat op hetzelfde netwerk zit als je raspberry pi surfen naar  [http://schermtijd01.local](http://schermtijd01.local) om het scorebord te zien.
+Nu kan je van eender welk toestel dat op hetzelfde netwerk zit als je raspberry pi surfen naar  [http://fastfriendsbox.local](http://fastfriendsbox.local) om het scorebord te zien.
 
 
 ## Thermal printer
@@ -365,7 +378,7 @@ Voeg volgende info in:
 #2.4GHz setup wifi 80211 b,g,n
 interface=wlan0
 driver=nl80211
-ssid=wolkenraam
+ssid=fastfriendsbox
 hw_mode=g
 channel=8
 wmm_enabled=0
@@ -642,12 +655,6 @@ Vul aan met de SSID en wachtwoorden
 ```
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
-
-network={
-    ssid="xxxxx"
-    psk="xxxxx"
-    key_mgmt=WPA-PSK
-}
 
 network={
     ssid="thuis"
