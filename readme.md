@@ -60,6 +60,12 @@ ssh pi@raspberrypi.local
 
 Het standaard wachtwoord is *raspberry*
 
+### locale instellen
+
+```
+export LC_ALL="en_GB.UTF-8"
+```
+
 ### Update van het systeem
 
 ```
@@ -612,8 +618,7 @@ Maak het script uitvoerbaar:
 
 ```
 sudo chmod +x /usr/bin/autohotspot
-``
-
+```
 
 ### Creëer een service file voor het hotspot script
 
