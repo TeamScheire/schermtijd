@@ -18,7 +18,7 @@ Deze stappen voer je dus uit op je eigen computer, met de sd-kaart ingestoken.
 De commando's zijn voor terminal op mac/linux.
 
 
-### navigaar naar de folder van de SD-kaart
+### Navigeer naar de folder van de SD-kaart
 
 ```
 cd /Volumes/boot
